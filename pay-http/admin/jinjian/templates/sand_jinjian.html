@@ -1,0 +1,205 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<form id="form-data" method="POST" enctype="multipart/form-data">
+  <dl>
+
+
+  <dt><label for="orderCode">订单号(唯一)</label>
+  <dd>
+          <input class="form-control" id="orderCode" name="orderCode" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="shopLinkman">业务联系人</label>
+  <dd>
+          <input class="form-control" id="shopLinkman" name="shopLinkman" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="shopLinkmanMobile">业务联系人手机</label>
+  <dd>
+          <input class="form-control" id="shopLinkmanMobile" name="shopLinkmanMobile" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="shopLinkmanMail">联系人邮箱</label>
+  <dd>
+          <input class="form-control" id="shopLinkmanMail" name="shopLinkmanMail" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="serviceTel">客服电话</label>
+  <dd>
+          <input class="form-control" id="serviceTel" name="serviceTel" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="td0CreditMonery">实时划款额度</label>
+  <dd>
+          <input class="form-control" id="td0CreditMonery" name="td0CreditMonery" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="shopJoinType">商户类型</label>
+  <dd>
+          <select class="form-control" id="shopJoinType" name="shopJoinType"><option value="4">终端商户</option><option value="3">普通商户</option></select>
+
+
+  </dd>
+
+
+
+  <dt><label for="openBusinessWay">开通业务方式</label>
+  <dd>
+          <select class="form-control" id="openBusinessWay" name="openBusinessWay"><option value="1">API</option><option value="2">WEB</option></select>
+
+
+  </dd>
+
+
+
+  <dt><label for="holidayCharge">节假日计费标识</label>
+  <dd>
+          <select class="form-control" id="holidayCharge" name="holidayCharge"><option value="0">否</option><option value="1">是</option></select>
+
+
+  </dd>
+
+
+
+  <dt><label for="holidayFactorage">节假日手续费</label>
+  <dd>
+          <input class="form-control" id="holidayFactorage" name="holidayFactorage" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="holidayMinLimit">节假日保底值(元)</label>
+  <dd>
+          <input class="form-control" id="holidayMinLimit" name="holidayMinLimit" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="chargeType">手续费收取方式</label>
+  <dd>
+          <select class="form-control" id="chargeType" name="chargeType"><option value="1">是</option><option value="0">否</option></select>
+
+
+  </dd>
+
+
+
+  <dt><label for="agentPayFlag">支付转代付</label>
+  <dd>
+          <select class="form-control" id="agentPayFlag" name="agentPayFlag"><option value="0">否</option><option value="1">是</option></select>
+
+
+  </dd>
+
+
+
+  <dt><label for="industryFlg">行业标识（对应码值）</label>
+  <dd>
+          <input class="form-control" id="industryFlg" name="industryFlg" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="signRemark">签约备注</label>
+  <dd>
+          <input class="form-control" id="signRemark" name="signRemark" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="sign_image">签约附件</label>
+  <dd>
+          <ul id="sign_image"><li><label for="sign_image-0">====</label> <table id="sign_image-0"><tr><th><label for="sign_image-0-image">请上传图片</label></th><td><input id="sign_image-0-image" name="sign_image-0-image" type="file"></td></tr></table></li><li><label for="sign_image-1">====</label> <table id="sign_image-1"><tr><th><label for="sign_image-1-image">请上传图片</label></th><td><input id="sign_image-1-image" name="sign_image-1-image" type="file"></td></tr></table></li><li><label for="sign_image-2">====</label> <table id="sign_image-2"><tr><th><label for="sign_image-2-image">请上传图片</label></th><td><input id="sign_image-2-image" name="sign_image-2-image" type="file"></td></tr></table></li></ul>
+
+
+  </dd>
+
+
+
+  <dt><label for="merchInfo">商户信息</label>
+  <dd>
+          <table id="merchInfo"><tr><th><label for="merchInfo-shopRegName">商户注册名称</label></th><td><input id="merchInfo-shopRegName" name="merchInfo-shopRegName" type="text" value=""></td></tr><tr><th><label for="merchInfo-shopNickName">商户简称</label></th><td><input id="merchInfo-shopNickName" name="merchInfo-shopNickName" type="text" value=""></td></tr><tr><th><label for="merchInfo-shopOperateAddr">商户经营地址</label></th><td><input id="merchInfo-shopOperateAddr" name="merchInfo-shopOperateAddr" type="text" value=""></td></tr><tr><th><label for="merchInfo-website">商户网址</label></th><td><input id="merchInfo-website" name="merchInfo-website" type="text" value=""></td></tr><tr><th><label for="merchInfo-businessScope">主营业务范围</label></th><td><input id="merchInfo-businessScope" name="merchInfo-businessScope" type="text" value=""></td></tr><tr><th><label for="merchInfo-businessDepict">主营业务场景描述</label></th><td><input id="merchInfo-businessDepict" name="merchInfo-businessDepict" type="text" value=""></td></tr><tr><th><label for="merchInfo-shopType">企业性质</label></th><td><select id="merchInfo-shopType" name="merchInfo-shopType"><option value="1">股份公司</option><option value="2">有限公司</option><option value="3">个体工商户</option><option value="4">机关事业单位</option><option value="5">个人</option><option value="6">其它</option></select></td></tr><tr><th><label for="merchInfo-registCost">注册资本（万元）</label></th><td><input id="merchInfo-registCost" name="merchInfo-registCost" type="text" value=""></td></tr><tr><th><label for="merchInfo-registDate">注册时间</label></th><td><input id="merchInfo-registDate" name="merchInfo-registDate" type="text" value=""></td></tr><tr><th><label for="merchInfo-shopCorp">商户法人</label></th><td><input id="merchInfo-shopCorp" name="merchInfo-shopCorp" type="text" value=""></td></tr><tr><th><label for="merchInfo-corpCretType">法人证据类型（对应码值）</label></th><td><input id="merchInfo-corpCretType" name="merchInfo-corpCretType" type="text" value=""></td></tr><tr><th><label for="merchInfo-corpCretNo">法人证件号</label></th><td><input id="merchInfo-corpCretNo" name="merchInfo-corpCretNo" type="text" value=""></td></tr><tr><th><label for="merchInfo-corpStartDate">证件有效起始日期</label></th><td><input id="merchInfo-corpStartDate" name="merchInfo-corpStartDate" type="text" value=""></td></tr><tr><th><label for="merchInfo-corpExpiryDate">证件有效结束日期</label></th><td><input id="merchInfo-corpExpiryDate" name="merchInfo-corpExpiryDate" type="text" value=""></td></tr><tr><th><label for="merchInfo-shopRemark">商户备注</label></th><td><input id="merchInfo-shopRemark" name="merchInfo-shopRemark" type="text" value=""></td></tr><tr><th><label for="merchInfo-bmBusinessLicense">营业执照信息</label></th><td><table id="merchInfo-bmBusinessLicense"><tr><th><label for="merchInfo-bmBusinessLicense-businessLicenseType">营业执照类型（对应码表）</label></th><td><input id="merchInfo-bmBusinessLicense-businessLicenseType" name="merchInfo-bmBusinessLicense-businessLicenseType" type="text" value=""></td></tr><tr><th><label for="merchInfo-bmBusinessLicense-businessLicense">营业执照号</label></th><td><input id="merchInfo-bmBusinessLicense-businessLicense" name="merchInfo-bmBusinessLicense-businessLicense" type="text" value=""></td></tr><tr><th><label for="merchInfo-bmBusinessLicense-licenseStartDate">营业执照有效起始日期</label></th><td><input id="merchInfo-bmBusinessLicense-licenseStartDate" name="merchInfo-bmBusinessLicense-licenseStartDate" type="text" value=""></td></tr><tr><th><label for="merchInfo-bmBusinessLicense-licenseExpiryDate">营业执照有效结束日期</label></th><td><input id="merchInfo-bmBusinessLicense-licenseExpiryDate" name="merchInfo-bmBusinessLicense-licenseExpiryDate" type="text" value=""></td></tr></table></td></tr></table>
+
+
+  </dd>
+
+
+
+  <dt><label for="payAccountInfos">付款帐户信息</label>
+  <dd>
+          <ul id="payAccountInfos"><li><label for="payAccountInfos-0">=====</label> <table id="payAccountInfos-0"><tr><th><label for="payAccountInfos-0-openType">账户性质</label></th><td><select id="payAccountInfos-0-openType" name="payAccountInfos-0-openType"><option value="1">对公</option><option value="2">对私</option></select></td></tr><tr><th><label for="payAccountInfos-0-accountName">账户名称</label></th><td><input id="payAccountInfos-0-accountName" name="payAccountInfos-0-accountName" type="text" value=""></td></tr><tr><th><label for="payAccountInfos-0-accountBank">开户银行</label></th><td><input id="payAccountInfos-0-accountBank" name="payAccountInfos-0-accountBank" type="text" value=""></td></tr><tr><th><label for="payAccountInfos-0-accountBankCode">开户行联行号</label></th><td><input id="payAccountInfos-0-accountBankCode" name="payAccountInfos-0-accountBankCode" type="text" value=""></td></tr><tr><th><label for="payAccountInfos-0-account">帐号</label></th><td><input id="payAccountInfos-0-account" name="payAccountInfos-0-account" type="text" value=""></td></tr><tr><th><label for="payAccountInfos-0-postscript">附言</label></th><td><input id="payAccountInfos-0-postscript" name="payAccountInfos-0-postscript" type="text" value=""></td></tr><tr><th><label for="payAccountInfos-0-accountType">账户类型</label></th><td><select id="payAccountInfos-0-accountType" name="payAccountInfos-0-accountType"><option value="1">代付自动充值账户</option><option value="2">结算</option><option value="3">来款帐户</option></select></td></tr><tr><th><label for="payAccountInfos-0-effectDate">账户启用日期</label></th><td><input id="payAccountInfos-0-effectDate" name="payAccountInfos-0-effectDate" type="text" value=""></td></tr><tr><th><label for="payAccountInfos-0-ineffectDate">账户停用日期</label></th><td><input id="payAccountInfos-0-ineffectDate" name="payAccountInfos-0-ineffectDate" type="text" value=""></td></tr><tr><th><label for="payAccountInfos-0-account_image">请上传图片</label></th><td><ul id="payAccountInfos-0-account_image"><li><label for="payAccountInfos-0-account_image-0">=====</label> <table id="payAccountInfos-0-account_image-0"><tr><th><label for="payAccountInfos-0-account_image-0-image">请上传图片</label></th><td><input id="payAccountInfos-0-account_image-0-image" name="payAccountInfos-0-account_image-0-image" type="file"></td></tr></table></li></ul></td></tr></table></li></ul>
+
+
+  </dd>
+
+
+
+  <dt><label for="payProductInfos">付款产品信息</label>
+  <dd>
+          <ul id="payProductInfos"><li><label for="payProductInfos-0">=====</label> <table id="payProductInfos-0"><tr><th><label for="payProductInfos-0-productSysNo">开通产品编码</label></th><td><input id="payProductInfos-0-productSysNo" name="payProductInfos-0-productSysNo" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-oneMaxMonery">单笔限额</label></th><td><input id="payProductInfos-0-oneMaxMonery" name="payProductInfos-0-oneMaxMonery" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-dayMaxMonery">日累计限额</label></th><td><input id="payProductInfos-0-dayMaxMonery" name="payProductInfos-0-dayMaxMonery" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-dayMaxPen">日累计交易笔数</label></th><td><input id="payProductInfos-0-dayMaxPen" name="payProductInfos-0-dayMaxPen" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-creditMonery">授信额度（单位元）</label></th><td><input id="payProductInfos-0-creditMonery" name="payProductInfos-0-creditMonery" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-effectDate">产品启用日期</label></th><td><input id="payProductInfos-0-effectDate" name="payProductInfos-0-effectDate" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-ineffectDate">产品停用日期</label></th><td><input id="payProductInfos-0-ineffectDate" name="payProductInfos-0-ineffectDate" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-isBatchFlg">是否批转单标识</label></th><td><select id="payProductInfos-0-isBatchFlg" name="payProductInfos-0-isBatchFlg"><option value="0">支持</option><option value="1">不支持</option></select></td></tr><tr><th><label for="payProductInfos-0-isCreditCardFlg">是否屏蔽贷记卡</label></th><td><select id="payProductInfos-0-isCreditCardFlg" name="payProductInfos-0-isCreditCardFlg"><option value="0">否</option><option value="1">是</option></select></td></tr><tr><th><label for="payProductInfos-0-clearingCycle">清算周期</label></th><td><select id="payProductInfos-0-clearingCycle" name="payProductInfos-0-clearingCycle"><option value="0">T1</option><option value="1">T0</option><option value="2">D0</option></select></td></tr><tr><th><label for="payProductInfos-0-td0Factorage">T0/D0费率</label></th><td><input id="payProductInfos-0-td0Factorage" name="payProductInfos-0-td0Factorage" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-td0MinLimit">T0/D0手续费保底（单位元）</label></th><td><input id="payProductInfos-0-td0MinLimit" name="payProductInfos-0-td0MinLimit" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-chargeMode">计费方式</label></th><td><select id="payProductInfos-0-chargeMode" name="payProductInfos-0-chargeMode"><option value="1">标准</option><option value="2">按交易金额区间</option></select></td></tr><tr><th><label for="payProductInfos-0-rateType">扣率计费类型</label></th><td><select id="payProductInfos-0-rateType" name="payProductInfos-0-rateType"><option value="0">按笔</option><option value="1">按扣率</option></select></td></tr><tr><th><label for="payProductInfos-0-productRates">金额区间信息</label></th><td><ul id="payProductInfos-0-productRates"><li><label for="payProductInfos-0-productRates-0">=====</label> <table id="payProductInfos-0-productRates-0"><tr><th><label for="payProductInfos-0-productRates-0-startYuan">金额区间起始值</label></th><td><input id="payProductInfos-0-productRates-0-startYuan" name="payProductInfos-0-productRates-0-startYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-endYuan">金额区间结束值</label></th><td><input id="payProductInfos-0-productRates-0-endYuan" name="payProductInfos-0-productRates-0-endYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-yuanPen">元/笔或扣率(0.38%值为0.38)</label></th><td><input id="payProductInfos-0-productRates-0-yuanPen" name="payProductInfos-0-productRates-0-yuanPen" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-upperLimitYuan">上限值</label></th><td><input id="payProductInfos-0-productRates-0-upperLimitYuan" name="payProductInfos-0-productRates-0-upperLimitYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-lowerLimitYuan">下限值</label></th><td><input id="payProductInfos-0-productRates-0-lowerLimitYuan" name="payProductInfos-0-productRates-0-lowerLimitYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-debitNratePer">借记卡费率信息(0.38%值为0.38)</label></th><td><input id="payProductInfos-0-productRates-0-debitNratePer" name="payProductInfos-0-productRates-0-debitNratePer" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-debitUpperLimitYuan">借记卡上限值(元)</label></th><td><input id="payProductInfos-0-productRates-0-debitUpperLimitYuan" name="payProductInfos-0-productRates-0-debitUpperLimitYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-debitLowerLimitYuan">借记卡限值(元)</label></th><td><input id="payProductInfos-0-productRates-0-debitLowerLimitYuan" name="payProductInfos-0-productRates-0-debitLowerLimitYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-creditNratePer">贷记卡费率信息(0.38%值为0.38)</label></th><td><input id="payProductInfos-0-productRates-0-creditNratePer" name="payProductInfos-0-productRates-0-creditNratePer" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-creditUpperLimitYuan">贷记卡上限值(元)</label></th><td><input id="payProductInfos-0-productRates-0-creditUpperLimitYuan" name="payProductInfos-0-productRates-0-creditUpperLimitYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-creditLowerLimitYuan">贷记卡限值(元)</label></th><td><input id="payProductInfos-0-productRates-0-creditLowerLimitYuan" name="payProductInfos-0-productRates-0-creditLowerLimitYuan" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-effectDate">扣率启用日期</label></th><td><input id="payProductInfos-0-productRates-0-effectDate" name="payProductInfos-0-productRates-0-effectDate" type="text" value=""></td></tr><tr><th><label for="payProductInfos-0-productRates-0-ineffectDate">扣率停用日期</label></th><td><input id="payProductInfos-0-productRates-0-ineffectDate" name="payProductInfos-0-productRates-0-ineffectDate" type="text" value=""></td></tr></table></li></ul></td></tr><tr><th><label for="payProductInfos-0-channelInfos">渠道信息</label></th><td><ul id="payProductInfos-0-channelInfos"><li><label for="payProductInfos-0-channelInfos-0">=====</label> <table id="payProductInfos-0-channelInfos-0"><tr><th><label for="payProductInfos-0-channelInfos-0-channelCode">渠道编码</label></th><td><input id="payProductInfos-0-channelInfos-0-channelCode" name="payProductInfos-0-channelInfos-0-channelCode" type="text" value=""></td></tr></table></li></ul></td></tr></table></li></ul>
+
+
+  </dd>
+  <button id="upload" type="button" onclick="doPost()">提交</button>
+
+  </dl>
+</form>
+
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript" src="/super_admin/jinjian/data/jquery.js"></script>
+
+<script type="text/javascript">
+function doPost(){
+    var userid = window.sessionStorage.userid;
+    var token = window.sessionStorage.token;
+    $.ajax({
+        url: '/super_admin/jinjian/merchant_jinjian/3',
+        type: 'POST',
+        cache: false,
+        data: new FormData($('#form-data')[0]),
+        processData: false,
+        contentType: false,
+        beforeSend: function(request) {
+                        request.setRequestHeader("X-AUTH-USER", userid);
+                        request.setRequestHeader("X-AUTH-TOKEN", token);
+                    },
+    }).done(function(res) { }).fail(function(res) {});
+} 
+</script>
+{% endblock %}

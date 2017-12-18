@@ -1,0 +1,6 @@
+{% for rec in records %}
+    <br/>=================================</br>
+    {% for key in rec.jinjian_info %}
+        {{ key }}: {{ rec.jinjian_info[key] }}
+    {% endfor %}
+{% endfor %}

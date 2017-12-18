@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="/super_admin/jinjian/data/bootstrap.css"/>
+        <link rel="stylesheet" type="text/css" href="/super_admin/jinjian/data/main.css"/>
+    </head>
+
+    <body>
+        {% block header %}
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                  <li><a href="/super_admin/jinjian/status">全部进件</a></li>
+                  <li><a href="/super_admin/jinjian/status?status=unaudit">待审列表</a></li>
+                  <li><a href="/super_admin/jinjian/merchant_jinjian/1">商户进件1</a></li>
+                  <li><a href="/super_admin/jinjian/merchant_jinjian/2">商户进件2</a></li>
+                  <li><a href="/super_admin/jinjian/merchant_jinjian/3">商户进件3</a></li>
+                </ul>
+                </div>
+            </nav>
+        {% endblock %}
+        <div class="container" id="content">{% block content %}{% endblock %}</div>
+        {% block footer %}
+
+        <script type="text/javascript">
+        var userid = window.sessionStorage.userid;
+        var token = window.sessionStorage.token;
+        $.ajax({
+            method: 'GET | POST | PUT | DELETE',
+            beforeSend: function(request) {
+		request.setRequestHeader("X-AUTH-USER", userid);
+		request.setRequestHeader("X-AUTH-TOKEN", token);
+	    },
+        }) .done(function(data){}) .fail(function(jqXHR){});
+        </script>
+
+        {% endblock %}
+    </body>
+</html>

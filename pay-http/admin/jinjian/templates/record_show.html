@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2> {{ record.mch_name }} </h2>
+
+<table class="table table-hover">
+    <tr>
+        <th>label</th>
+        <th>value</th>
+    </tr>
+{% for key in record.jinjian_info %}
+<tr>
+    <td id="{{ key }}">{{ key }}</td>
+
+    <td>{% if (record.jinjian_info[key] is string) and (".png" in record.jinjian_info[key] or ".jpg" in record.jinjian_info[key] or ".bmp" in record.jinjian_info or ".jpeg" in record.jinjian_info[key]) %}
+                      <image src={{ "/super_admin/jinjian/data/" ~ record.jinjian_info[key] }} width="320"/>
+                  {% else %}
+                      {{ record.jinjian_info[key] }}
+                  {% endif %}
+    </td>
+</tr>
+               
+{% endfor %}
+</table>
+
+{% if record.resp_data %}
+<hr/>
+    <p>第三方审核结果：</p>
+    <p>{{ record.resp_data }}</p>
+{% endif %}
+
+
+{% if not record.status %}
+    <a class="btn btn-success" href={{ "/super_admin/jinjian/audit/" ~ record.id ~ "?action=submit" }} role="button">提交银行审核</a>
+    <a class="btn btn-warning" href={{ "/super_admin/jinjian/audit/" ~ record.id ~ "?action=refused" }} role="button">拒绝此单</a>
+{% endif %}
+
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript" src="/super_admin/jinjian/data/jquery.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#officeCode").html("平台编号");
+    $("#merchantcode").html("商户编号");
+    $("#bankLinkNumber").html("进件银行行号");
+    $("#mchName").html("商户名称");
+    $("#mchShortName").html("商户简称");
+    $("#city").html("城市");
+    $("#province").html("省份");
+    $("#district").html("区域");
+    $("#address").html("地址");
+    $("#mobile").html("手机号");
+    $("#bankNo").html("支付联行号");
+    $("#industryNo").html("行业类别编号");
+    $("#balanceType").html("结算类型(balanceType)");
+    $("#balanceName").html("结算户名");
+    $("#userIDCardA").html("身份证正面照片");
+    $("#userIDCardB").html("身份证背面照片");
+    $("#userIdNumber").html("身份证号码");
+    $("#cardImgA").html("结算银行卡正面照片");
+    $("#legalIdNumber").html("法人身份证号");
+    $("#legalIDCardA").html("法人身份证正面照片");
+    $("#legalIDCardB").html("法人身份证背面照片");
+    $("#cardNumber").html("结算银行卡号码");
+    $("#contact").html("联系人");
+    $("#wxUseParent").html("商户是否使用appid标识");
+    $("#licenseNum").html("营业执照注册号");
+    $("#licenseStartDate").html("营业执照开始时间");
+    $("#licensePeriod").html("营业执照有效期");
+    $("#licenseEndDate").html("营业执照到期时间");
+    $("#licenseScope").html("营业执照经营范围");
+    $("#licenseImg").html("营业执照照片");
+    $("#useDine").html("是否使用围餐");
+    $("#mchFrontImg").html("商户门口照片");
+    $("#mchInnerImg").html("商户内部环境照片");
+    $("#mchDeskImg").html("商户收银台照片");
+    $("#wxValue").html("D0结算-微信提现手续费");
+    $("#aliValue").html("D0结算-支付宝提现手续费");
+    $("#paymentType").html("结算类型(d0, d1), 这里0代表d0, 1代表d1");
+    $("#zfbpay").html("支付宝费率(万分率，如60)");
+    $("#wxpay").html("微信费率(万分率，如60)");
+    $("#notifyUrl").html("请求回调地址");
+    $("#appid").html("需要公众号支付的请传此参数");
+    $("#payDirectory").html("支付目录");
+    $("#accountLicense").html("（开户许可证）公司账户请传");
+
+    $("#action").html("接口操作名，固定值");
+    $("#version").html("version");
+    $("#expanderCd").html("拓展商号，平台方进行分配");
+    $("#coopMchtId").html("接入方对商户的自定义编码");
+    $("#mchtName").html("接入方商户名称");
+    $("#mchtShortName").html("商户简称");
+    $("#parentMchtld").html("平台方上级商户");
+    $("#bizLicense").html("营业执照编号,企业用户必须上送");
+    $("#legalIdExpiredTime").html("营业执照有效期");
+    $("#IdNo").html("企业法人身份证或个体负责人身份证");
+    $("#mchtAddr").html("商户地址");
+    $("#area").html("城市代码");
+    $("#accountType").html("账户类型：0-公户、1-私户");
+    $("#account").html("银行账号");
+    $("#accountName").html("账户名");
+    $("#bankCode").html("开户行号");
+    $("#bankName").html("开户行名");
+    $("#openBranch").html("开户网点联行号");
+    $("#contactName").html("联系人名称");
+    $("#contactMobile").html("联系人手机号");
+    $("#contactEmail").html("联系人邮箱");
+    $("#mchtLevel").html("1-分店、2-商户");
+    $("#openType").html("1-个人、C-企业");
+  });
+</script>
+{% endblock %}

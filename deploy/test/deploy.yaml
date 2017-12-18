@@ -1,0 +1,32 @@
+---
+default:
+  user: ubuntu
+  password: "123456"
+dependency:
+  pay-http:
+  - apt-get install -y:
+    - libmysqlclient-dev
+    - libz-dev
+    - python-dev
+    - python-pip
+    - git
+    - openssl
+    - libffi-dev
+    - build-essential
+  - pip install virtualenv
+env:
+  pay-http:
+    pay-test:
+      bash:
+          - echo "config_name='test'" >> base/config.py
+  pay-socket:
+    pay-test:
+      bash:
+          - sed -i -e '2s/True/False/' settings.py
+  pay-web:
+    pay-test:
+      bash:
+          - npm run build:sit
+          - ls | grep -v dist | xargs rm -r
+          - mv dist/* .
+          - rm -r dist

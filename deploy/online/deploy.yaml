@@ -1,0 +1,20 @@
+---
+default:
+  user: jwtao 
+dependency:
+  pay-http:
+  - apt-get install -y:
+    - libmysqlclient-dev
+    - libz-dev
+    - python-dev
+    - python-pip
+    - git
+    - openssl
+    - libffi-dev
+    - build-essential
+  - pip install virtualenv
+env:
+  pay-http:
+    pay-s1:
+      bash:
+          - echo "config_name='prod'" >> base/config.py

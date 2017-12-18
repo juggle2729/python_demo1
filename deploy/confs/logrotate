@@ -1,0 +1,19 @@
+/var/log/crazy/*.log {
+        daily
+        rotate 7
+        copytruncate
+        compress
+        delaycompress
+        missingok
+        notifempty
+}
+/var/log/crazy/track.json {
+        daily
+        rotate 15
+        copytruncate
+        compress
+        delaycompress
+        missingok
+        notifempty
+}
+

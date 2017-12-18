@@ -1,0 +1,320 @@
+{% extends "layout.html" %}
+{% block header %}
+{% endblock %}
+{% block content %}
+
+<form id="form-data" enctype="multipart/form-data">
+  <dl>
+        
+  <dt><label class="hidden" for="officeCode">平台编号</label>
+  <dd>
+          <input class="form-control" id="officeCode" name="officeCode" type="hidden" value="0000000035">
+  </dd>
+        
+  <dt><label for="merchantcode">商户编号，用于修改进件信息, 如果你不知道商户编号，只是进件，请勿填写此项！！！</label>
+  <dd>
+          <input class="form-control" id="merchantcode" name="merchantcode" type="text" value="">
+  </dd>
+        
+<!--
+  <dt><label for="bankLinkNumber">进件银行行号</label>
+  <dd>
+          <select class="form-control" id="bankLinkNumber" name="bankLinkNumber"><option value="308584000013">招商308584000013</option><option value="310290000013">浦发310290000013</option></select>
+  </dd>
+-->
+        
+  <dt><label for="mchName">商户名称</label>
+  <dd>
+          <input class="form-control" id="mchName" name="mchName" type="text" value="">
+  </dd>
+        
+  <dt><label for="mchShortName">商户简称</label>
+  <dd>
+          <input class="form-control" id="mchShortName" name="mchShortName" type="text" value="">
+  </dd>
+        
+  <dt><label for="city">城市</label>
+  <dd>
+          <input class="form-control" id="city" name="city" type="text" value="">
+  </dd>
+        
+  <dt><label for="province">省份</label>
+  <dd>
+          <input class="form-control" id="province" name="province" type="text" value="">
+  </dd>
+        
+  <dt><label for="district">区域</label>
+  <dd>
+          <input class="form-control" id="district" name="district" type="text" value="">
+  </dd>
+        
+  <dt><label for="address">地址</label>
+  <dd>
+          <input class="form-control" id="address" name="address" type="text" value="">
+  </dd>
+        
+  <dt><label for="mobile">手机号(同一个手机号在一家银行只能进件一次！)</label>
+  <dd>
+          <input class="form-control" id="mobile" name="mobile" type="text" value="">
+  </dd>
+        
+  <dt><label for="bankNo">支付联行号</label>
+  <dd>
+          <input class="form-control" id="bankNo" name="bankNo" type="text" value="">
+  </dd>
+        
+  <dt><label for="industryNo">行业类别编号</label>
+  <dd>
+          <input class="form-control" id="industryNo" name="industryNo" type="text" value="">
+  </dd>
+        
+  <dt><label for="balanceType">结算方式</label>
+  <dd>
+          <select class="form-control" id="balanceType" name="balanceType"><option value="2">对私</option><option value="1">对公</option></select>
+  </dd>
+        
+  <dt><label for="balanceName">结算户名</label>
+  <dd>
+          <input class="form-control" id="balanceName" name="balanceName" type="text" value="">
+  </dd>
+        
+  <dt><label for="userIDCardA">结算卡持有人身份证正面照片</label>
+  <dd>
+          <input id="userIDCardA" name="userIDCardA" type="file">
+  </dd>
+        
+  <dt><label for="userIDCardB">结算卡持有人身份证背面照片</label>
+  <dd>
+          <input id="userIDCardB" name="userIDCardB" type="file">
+  </dd>
+        
+  <dt><label for="userIdNumber">结算卡持有人身份证号码</label>
+  <dd>
+          <input class="form-control" id="userIdNumber" name="userIdNumber" type="text" value="">
+  </dd>
+        
+  <dt><label for="cardImgA">结算银行卡正面照片</label>
+  <dd>
+          <input id="cardImgA" name="cardImgA" type="file">
+  </dd>
+        
+  <dt><label for="legalIdNumber">法人身份证号</label>
+  <dd>
+          <input class="form-control" id="legalIdNumber" name="legalIdNumber" type="text" value="">
+  </dd>
+        
+  <dt><label for="legalIDCardA">法人身份证正面照片</label>
+  <dd>
+          <input id="legalIDCardA" name="legalIDCardA" type="file">
+  </dd>
+        
+  <dt><label for="legalIDCardB">法人身份证背面照片</label>
+  <dd>
+          <input id="legalIDCardB" name="legalIDCardB" type="file">
+  </dd>
+        
+  <dt><label for="cardNumber">结算银行卡号码</label>
+  <dd>
+          <input class="form-control" id="cardNumber" name="cardNumber" type="text" value="">
+  </dd>
+        
+  <dt><label for="contact">联系人</label>
+  <dd>
+          <input class="form-control" id="contact" name="contact" type="text" value="">
+  </dd>
+        
+  <dt><label for="wxUseParent">商户是否使用appid标识</label>
+  <dd>
+          <select class="form-control" id="wxUseParent" name="wxUseParent"><option value="">不使用</option><option value="1">使用</option></select>
+  </dd>
+        
+  <dt><label for="licenseNum">营业执照注册号</label>
+  <dd>
+          <input class="form-control" id="licenseNum" name="licenseNum" type="text" value="">
+  </dd>
+        
+  <dt><label for="licenseStartDate">营业执照开始时间 格式为 yyyy-MM-dd(如2016-02-21)</label>
+  <dd>
+          <input class="form-control" id="licenseStartDate" name="licenseStartDate" type="text" value="">
+  </dd>
+        
+  <dt><label for="licensePeriod">营业执照有效期(选择长期有效)</label>
+  <dd>
+          <select class="form-control" id="licensePeriod" name="licensePeriod"><option value="1">长期有效</option><option value="">非长期有效</option></select>
+  </dd>
+        
+  <dt><label for="licenseEndDate">营业执照到期时间(需要和营业执照有效期配合提交, 两者必须提交一个 格式是yyyy-MM-dd)</label>
+  <dd>
+          <input class="form-control" id="licenseEndDate" name="licenseEndDate" type="text" value="">
+  </dd>
+        
+  <dt><label for="licenseScope">营业执照经营范围</label>
+  <dd>
+          <input class="form-control" id="licenseScope" name="licenseScope" type="text" value="">
+  </dd>
+        
+  <dt><label for="licenseImg">营业执照照片</label>
+  <dd>
+          <input id="licenseImg" name="licenseImg" type="file">
+  </dd>
+        
+  <dt><label class="hidden" for="useDine">是否使用围餐，使用围餐时，不能填写各种支付方式的费率，否则会报错</label>
+  <dd>
+          <select class="hidden form-control" id="useDine" name="useDine"><option value="">不使用</option><option value="1">使用</option></select>
+  </dd>
+        
+  <dt><label class="hidden" for="mchFrontImg">商户门口照片，使用围餐时，必填（usedine=1时需要提交）</label>
+  <dd>
+          <input class="hidden" id="mchFrontImg" name="mchFrontImg" type="file">
+  </dd>
+        
+  <dt><label class="hidden" for="mchInnerImg">商户内部环境照片，使用围餐时，必填（usedine=1时需要提交）</label>
+  <dd>
+          <input class="hidden" id="mchInnerImg" name="mchInnerImg" type="file">
+  </dd>
+        
+  <dt><label class="hidden" for="mchDeskImg">商户收银台照片，使用围餐时，必填（usedine=1时需要提交）</label>
+  <dd>
+          <input class="hidden" id="mchDeskImg" name="mchDeskImg" type="file">
+  </dd>
+  
+  <dt><label for="paymentType">结算类型</label>
+  <dd>
+      <input id="paymentType" name="paymentType-0" type="checkbox" value="d0">d0</input>
+      <input id="paymentType" name="paymentType-1" type="checkbox" value="d1">d1</input>
+  </dd>      
+  <dt><label for="wxValue">D0结算-微信提现手续费(单位为分，如0.2元，该值不应小于30，不接收小数。开通微信D0时，此字段必填（浦发进件必填））</label>
+  <dd>
+          <input class="form-control" id="wxValue" name="wxValue" type="text" value="">
+  </dd>
+        
+  <dt><label for="aliValue">D0结算-支付宝提现手续费(单位为分，如0.2元，该值不应小于30，不接收小数。开通支付宝D0时，此字段必填（浦发进件必填）)</label>
+  <dd>
+          <input class="form-control" id="aliValue" name="aliValue" type="text" value="">
+  </dd>
+        
+  
+
+  <dt><label for="zfbpay">支付宝费率(万分率，如60）</label>
+  <dd>
+          <input class="form-control" id="zfbpay" name="zfbpay" type="text" value="">
+  </dd>
+        
+  <dt><label for="wxpay">微信费率(万分率，如60）</label>
+  <dd>
+          <input class="form-control" id="wxpay" name="wxpay" type="text" value="">
+  </dd>
+        
+  <dt><label class="hidden" for="notifyUrl">请求回调地址</label>
+  <dd>
+          <input class="form-control" id="notifyUrl" name="notifyUrl" type="hidden" value="http://p.51paypay.net/api/v1/keda/jinjian/callback">
+  </dd>
+
+  <dt><label for="accountLicense">（开户许可证）公司账户请传</label>
+  <dd>
+          <input id="accountLicense" name="accountLicense" type="file">
+  </dd>
+  <hr />
+
+  <dd>
+	<button class="btn btn-success" id="upload" type="button" onclick="doPost()">提交</button>
+  </dd>
+    
+  </dl>
+</form>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript" src="/super_admin/jinjian/data/jquery.js"></script>
+
+<script type="text/javascript">
+
+function doPost(){
+    var token = window.sessionStorage.token;
+    var userid = window.sessionStorage.userid;
+    var error_occur = [];
+    var form_data = new FormData($('#form-data')[0]);
+    for (err of $(".myerror")) {
+        err.hidden = true;
+    }
+
+    var paymentType = new Array();
+    if (form_data.get('paymentType-0')) {
+        paymentType.push(form_data.get('paymentType-0'));
+        form_data.delete('paymentType-0');
+    }
+    if (form_data.get('paymentType-1')) {
+        paymentType.push(form_data.get('paymentType-1'));
+        form_data.delete('paymentType-1');
+    }
+    form_data.append('paymentType', paymentType);
+
+    for (var key of ['mchName', 'mchShortName', 'officeCode',
+        'city', 'province', 'address', 'mobile', 'bankNo', 'industryNo', 'balanceType',
+        'balanceName', 'userIdNumber', 'legalIdNumber', 'cardNumber', 'contact', 'paymentType']) {
+        if (!form_data.get(key)) {
+            $("#"+key).before('<p style="color:red" class="myerror">不能为空.</p>');
+            error_occur.push(false)
+
+        }
+    }
+
+    for (var key of ['userIDCardA', 'userIDCardB', 'cardImgA', 'legalIDCardA', 'legalIDCardB']) {
+        if (form_data.get(key).size == 0) {
+            $("#"+key).before('<p style="color:red" class="myerror">需要上传图片.</p>');
+             error_occur.push(false)
+        }
+        if (form_data.get(key).size > 300 * 1024) {
+            $("#"+key).before('<p style="color:red" class="myerror">图片大小不能超过300kb.</p>');
+            error_occur.push(false)
+        }
+    }
+
+    if (form_data.get("licenseImg").size > 500 * 1024) {
+        $("#"+key).before('<p style="color:red" class="myerror">图片大小不能超过500kb.</p>');
+         error_occur.push(false)
+    }
+    var _card = /^\d{12,19}$/
+    if (!_card.test(form_data.get('cardNumber'))) {
+            $("#cardNumber").before('<p style="color:red" class="myerror">请正确填写银行卡号（12~19位数字且中间无空格）</p>');
+            error_occur.push(false)
+    }
+    
+    var DATE_FORMAT = /^[0-9]{4}-[0-1]?[0-9]{1}-[0-3]?[0-9]{1}$/
+    for(var key of ['licenseStartDate']){
+      if(!DATE_FORMAT.test(form_data.get(key))){
+          $("#"+key).before('<p style="color:red" class="myerror">时间格式错误.</p>');
+           error_occur.push(false)
+      }
+    }
+    var _result = true
+    error_occur.forEach(function(val,index,arr){
+        if(!val){
+           _result = false
+        }
+    })  
+    if(!_result){
+      return false
+    }
+    $.ajax({
+        url: '/super_admin/jinjian/merchant_jinjian/2',
+        type: 'POST',
+        cache: false,
+        data: form_data,
+        processData: false,
+        contentType: false,
+        beforeSend: function(request) {
+                        request.setRequestHeader("X-AUTH-USER", userid);
+                        request.setRequestHeader("X-AUTH-TOKEN", token);
+                    },
+    }).done(function(res) {
+        $("#content").html(res);
+    }).fail(function(res) {});
+}
+
+</script>
+
+{% endblock %}

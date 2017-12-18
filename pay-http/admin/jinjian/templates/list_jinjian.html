@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<table class="table table-hover">
+<tr>
+    <th>公司名</th>
+    <th>操作</th>
+</tr>
+{% for jj in jinjians %}
+<tr>
+    <td>
+       {% if jj.jinjian_info['mchName'] %}
+           {{ jj.jinjian_info['mchName'] }}
+       {% else %}
+           {{ jj.jinjian_info['mchtName'] }}
+       {% endif %}
+    </td>
+    <td>
+       <a class="btn btn-default" href={{ "/super_admin/jinjian/audit/" ~ jj.id }}>详细</a>
+    {% if not jj.status %}
+        <a class="btn btn-success" href={{ "/super_admin/jinjian/audit/" ~ jj.id ~ "?action=submit"  }}>提交银行审核</a>
+        <a class="btn btn-warning" href={{ "/super_admin/jinjian/audit/" ~ jj.id ~ "?action=refused" }}>拒绝此单</a>
+    {% endif %}
+    </td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

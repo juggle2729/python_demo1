@@ -1,0 +1,286 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<form id="form-data" enctype="multipart/form-data">
+  <dl>
+
+
+  <dt>
+  <dd>
+          <input id="action" name="action" type="hidden" value="mcht/info/enter">
+
+
+  </dd>
+
+
+
+  <dt>
+  <dd>
+          <input id="version" name="version" type="hidden" value="2.0">
+
+
+  </dd>
+
+
+
+  <dt>
+  <dd>
+          <input id="expanderCd" name="expanderCd" type="hidden" value="0303603070">
+
+
+  </dd>
+
+
+
+  <dt>
+  <dd>
+          <input id="coopMchtId" name="coopMchtId" type="hidden" value="1509501834">
+
+
+  </dd>
+
+
+
+  <dt><label for="mchtName">接入方商户名称</label>
+  <dd>
+          <input class="form-control" id="mchtName" name="mchtName" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="mchtShortName">商户简称</label>
+  <dd>
+          <input class="form-control" id="mchtShortName" name="mchtShortName" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="parentMchtld">平台方上级商户</label>
+  <dd>
+          <input class="form-control" id="parentMchtld" name="parentMchtld" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="bizLicense">营业执照编号,企业用户必须上送</label>
+  <dd>
+          <input class="form-control" id="bizLicense" name="bizLicense" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="legalIdExpiredTime">营业执照有效期</label>
+  <dd>
+          <input class="form-control" id="legalIdExpiredTime" name="legalIdExpiredTime" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="IdNo">企业法人身份证或个体负责人身份证</label>
+  <dd>
+          <input class="form-control" id="IdNo" name="IdNo" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="mchtAddr">商户地址</label>
+  <dd>
+          <input class="form-control" id="mchtAddr" name="mchtAddr" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="province">省份代码（具体参考字典6.10）</label>
+  <dd>
+          <input class="form-control" id="province" name="province" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="city">城市代码（具体参考字典6.10）</label>
+  <dd>
+          <input class="form-control" id="city" name="city" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="area">城市代码（具体参考字典6.10）</label>
+  <dd>
+          <input class="form-control" id="area" name="area" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="accountType">账户类型：0-公户、1-私户</label>
+  <dd>
+          <select class="form-control" id="accountType" name="accountType"><option value="0">公户</option><option value="1">私户</option></select>
+
+
+  </dd>
+
+
+
+  <dt><label for="account">银行账号（纯数字，不超过24位）</label>
+  <dd>
+          <input class="form-control" id="account" name="account" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="accountName">账户名</label>
+  <dd>
+          <input class="form-control" id="accountName" name="accountName" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="bankCode">开户行号（具体参考字典6.11）</label>
+  <dd>
+          <input class="form-control" id="bankCode" name="bankCode" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="bankName">开户行名（精确到支行）</label>
+  <dd>
+          <input class="form-control" id="bankName" name="bankName" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="openBranch">开户网点联行号（具体参考字典6.12）</label>
+  <dd>
+          <input class="form-control" id="openBranch" name="openBranch" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="contactName">联系人名称</label>
+  <dd>
+          <input class="form-control" id="contactName" name="contactName" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="contactMobile">联系人手机号，11位至16位</label>
+  <dd>
+          <input class="form-control" id="contactMobile" name="contactMobile" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="contactEmail">联系人邮箱</label>
+  <dd>
+          <input class="form-control" id="contactEmail" name="contactEmail" type="text" value="">
+
+
+  </dd>
+
+
+
+  <dt><label for="mchtLevel">1-分店（上送父级商户号时，必须选择该级别）、2-商户</label>
+  <dd>
+          <select class="form-control" id="mchtLevel" name="mchtLevel"><option value="1">分店</option><option value="2">商户</option></select>
+
+
+  </dd>
+
+
+
+  <dt><label for="openType">1-个人、C-企业</label>
+  <dd>
+          <select class="form-control" id="openType" name="openType"><option value="1">个人</option><option value="C">企业</option></select>
+
+
+  </dd>
+
+
+
+  <dt>
+  <dd>
+          <input id="notifyUrl" name="notifyUrl" type="hidden" value="http://www.51paypay.net/api/v1/guangda/callback">
+
+
+  </dd>
+
+
+
+  <dt><label for="acquirerTypes">支付渠道（支付渠道一定要存在一个）建议一次性入驻所有支持的钱包通道（支持的钱包通道，具体参考字典6.5）</label>
+  <dd>
+          <ul id="acquirerTypes"><li><label for="acquirerTypes-0">-------------------------------------------------------------------</label> <table id="acquirerTypes-0"><tr><th><label for="acquirerTypes-0-acquirerType">支付渠道类型 （具体参考字典6.5）</label></th><td><select id="acquirerTypes-0-acquirerType" name="acquirerTypes-0-acquirerType"><option value="alipay">支付宝钱包</option><option value="wechat">微信钱包</option><option value="qq">QQ钱包</option><option value="baidu">百度钱包</option><option value="jd">京东钱包</option></select></td></tr><tr><th><label for="acquirerTypes-0-scale">费率(‰) , 单位：千分之，例如千3.8费率填3.8，支持小数点后2位</label></th><td><input id="acquirerTypes-0-scale" name="acquirerTypes-0-scale" type="text" value=""></td></tr><tr><th><label for="acquirerTypes-0-countRole">结算主体,0-本商户、1-上级商户</label></th><td><select id="acquirerTypes-0-countRole" name="acquirerTypes-0-countRole"><option value="0">本商户</option><option value="1">上级商户</option></select></td></tr><tr><th><label for="acquirerTypes-0-tradeType">行业类型[经营类目]（具体参考字典6.9）</label></th><td><input id="acquirerTypes-0-tradeType" name="acquirerTypes-0-tradeType" type="text" value=""></td></tr></table></li><li><label for="acquirerTypes-1">-------------------------------------------------------------------</label> <table id="acquirerTypes-1"><tr><th><label for="acquirerTypes-1-acquirerType">支付渠道类型 （具体参考字典6.5）</label></th><td><select id="acquirerTypes-1-acquirerType" name="acquirerTypes-1-acquirerType"><option value="alipay">支付宝钱包</option><option value="wechat">微信钱包</option><option value="qq">QQ钱包</option><option value="baidu">百度钱包</option><option value="jd">京东钱包</option></select></td></tr><tr><th><label for="acquirerTypes-1-scale">费率(‰) , 单位：千分之，例如千3.8费率填3.8，支持小数点后2位</label></th><td><input id="acquirerTypes-1-scale" name="acquirerTypes-1-scale" type="text" value=""></td></tr><tr><th><label for="acquirerTypes-1-countRole">结算主体,0-本商户、1-上级商户</label></th><td><select id="acquirerTypes-1-countRole" name="acquirerTypes-1-countRole"><option value="0">本商户</option><option value="1">上级商户</option></select></td></tr><tr><th><label for="acquirerTypes-1-tradeType">行业类型[经营类目]（具体参考字典6.9）</label></th><td><input id="acquirerTypes-1-tradeType" name="acquirerTypes-1-tradeType" type="text" value=""></td></tr></table></li><li><label for="acquirerTypes-2">-------------------------------------------------------------------</label> <table id="acquirerTypes-2"><tr><th><label for="acquirerTypes-2-acquirerType">支付渠道类型 （具体参考字典6.5）</label></th><td><select id="acquirerTypes-2-acquirerType" name="acquirerTypes-2-acquirerType"><option value="alipay">支付宝钱包</option><option value="wechat">微信钱包</option><option value="qq">QQ钱包</option><option value="baidu">百度钱包</option><option value="jd">京东钱包</option></select></td></tr><tr><th><label for="acquirerTypes-2-scale">费率(‰) , 单位：千分之，例如千3.8费率填3.8，支持小数点后2位</label></th><td><input id="acquirerTypes-2-scale" name="acquirerTypes-2-scale" type="text" value=""></td></tr><tr><th><label for="acquirerTypes-2-countRole">结算主体,0-本商户、1-上级商户</label></th><td><select id="acquirerTypes-2-countRole" name="acquirerTypes-2-countRole"><option value="0">本商户</option><option value="1">上级商户</option></select></td></tr><tr><th><label for="acquirerTypes-2-tradeType">行业类型[经营类目]（具体参考字典6.9）</label></th><td><input id="acquirerTypes-2-tradeType" name="acquirerTypes-2-tradeType" type="text" value=""></td></tr></table></li><li><label for="acquirerTypes-3">-------------------------------------------------------------------</label> <table id="acquirerTypes-3"><tr><th><label for="acquirerTypes-3-acquirerType">支付渠道类型 （具体参考字典6.5）</label></th><td><select id="acquirerTypes-3-acquirerType" name="acquirerTypes-3-acquirerType"><option value="alipay">支付宝钱包</option><option value="wechat">微信钱包</option><option value="qq">QQ钱包</option><option value="baidu">百度钱包</option><option value="jd">京东钱包</option></select></td></tr><tr><th><label for="acquirerTypes-3-scale">费率(‰) , 单位：千分之，例如千3.8费率填3.8，支持小数点后2位</label></th><td><input id="acquirerTypes-3-scale" name="acquirerTypes-3-scale" type="text" value=""></td></tr><tr><th><label for="acquirerTypes-3-countRole">结算主体,0-本商户、1-上级商户</label></th><td><select id="acquirerTypes-3-countRole" name="acquirerTypes-3-countRole"><option value="0">本商户</option><option value="1">上级商户</option></select></td></tr><tr><th><label for="acquirerTypes-3-tradeType">行业类型[经营类目]（具体参考字典6.9）</label></th><td><input id="acquirerTypes-3-tradeType" name="acquirerTypes-3-tradeType" type="text" value=""></td></tr></table></li><li><label for="acquirerTypes-4">-------------------------------------------------------------------</label> <table id="acquirerTypes-4"><tr><th><label for="acquirerTypes-4-acquirerType">支付渠道类型 （具体参考字典6.5）</label></th><td><select id="acquirerTypes-4-acquirerType" name="acquirerTypes-4-acquirerType"><option value="alipay">支付宝钱包</option><option value="wechat">微信钱包</option><option value="qq">QQ钱包</option><option value="baidu">百度钱包</option><option value="jd">京东钱包</option></select></td></tr><tr><th><label for="acquirerTypes-4-scale">费率(‰) , 单位：千分之，例如千3.8费率填3.8，支持小数点后2位</label></th><td><input id="acquirerTypes-4-scale" name="acquirerTypes-4-scale" type="text" value=""></td></tr><tr><th><label for="acquirerTypes-4-countRole">结算主体,0-本商户、1-上级商户</label></th><td><select id="acquirerTypes-4-countRole" name="acquirerTypes-4-countRole"><option value="0">本商户</option><option value="1">上级商户</option></select></td></tr><tr><th><label for="acquirerTypes-4-tradeType">行业类型[经营类目]（具体参考字典6.9）</label></th><td><input id="acquirerTypes-4-tradeType" name="acquirerTypes-4-tradeType" type="text" value=""></td></tr></table></li></ul>
+
+
+  </dd>
+
+
+	<button id="upload" type="button" onclick="doPost()">提交</button>
+
+
+
+  </dl>
+</form>
+
+{% endblock %}
+
+{% block footer %}
+
+<script type="text/javascript" src="/super_admin/jinjian/data/jquery.js"></script>
+
+<script type="text/javascript">
+
+function doPost(){
+    var token = window.sessionStorage.token;
+    var userid = window.sessionStorage.userid;
+    $.ajax({
+        url: '/super_admin/jinjian/merchant_jinjian/1',
+        type: 'POST',
+        cache: false,
+        data: new FormData($('#form-data')[0]),
+        processData: false,
+        contentType: false,
+        beforeSend: function(request) {
+                        request.setRequestHeader("X-AUTH-USER", userid);
+                        request.setRequestHeader("X-AUTH-TOKEN", token);
+                    },
+        }).done(function(res) {
+            $("#content").html(res);
+        }).fail(function(res) {});
+}
+
+</script>
+{% endblock %}

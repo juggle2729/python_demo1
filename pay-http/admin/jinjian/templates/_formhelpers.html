@@ -1,0 +1,18 @@
+{% macro render_field(field) %}
+  <dt>{% if not field.type=='HiddenField' %}{{ field.label }}{% endif %}
+  <dd>{% if field.type=='TextField' or field.type=='SelectField' %}
+          {{ field(class="form-control", **kwargs)|safe }}
+      {% elif field.type=='SubmitField' %}
+          <button type="submit" class="btn btn-success">提交</button>
+      {% else %}
+          {{ field(**kwargs)|safe }}
+      {% endif %}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
