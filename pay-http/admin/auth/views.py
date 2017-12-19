@@ -177,7 +177,8 @@ def get_appid_mchnames():
 def login():
     phone = request.form.get('userinfo', '')
     passwd = request.form.get('password', '')
-    return login_user(phone, passwd)
+    ip = request.remote_addr
+    return login_user(phone, passwd, ip)
 
 
 @response_wrapper

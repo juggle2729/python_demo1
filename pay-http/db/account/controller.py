@@ -8,7 +8,7 @@ from db.account.model import (
     Appid, Account, UserToken, AppManage, VALID_STATUS, IMG_PATH, RechargeRecord,
     AppidChannel, PollingCustID, JinjianAppid, JinjianRecord, Transaction, AlipayAppid,
     AccountRelation, APPID_STATUS, MCH_TYPE)
-from db.account.model import ADMIN_MCH_ID
+from db.account.model import ADMIN_MCH_ID, IP_DICT
 from utils.decorator import sql_wrapper
 from db.pay_record.model import PAY_TYPE
 from db.account.model import TRANS_TYPE, RECHARGE_STATUS, BankCardInfo
@@ -130,13 +130,16 @@ def trash_appid(appid):
 
 
 @sql_wrapper
-def login_user(phone, password):
+def login_user(phone, password, ip=None):
     user = Account.query.filter(Account.phone == phone).first()
     if not user:
         raise err.AuthenticateError(status=StatusCode.INVALID_USER)
 
     if not bcrypt.check_password_hash(user.passwd_hash, password):
         raise err.AuthenticateError(status=StatusCode.WRONG_PASSWORD)
+    white_ips = IP_DICT.get(user.id)
+    if white_ips and ip and ip not in white_ips:
+        raise err.AuthenticateError(status=StatusCode.INVALID_USER)
 
     user_token = UserToken()
     user_token.token = id_generator.generate_uuid()

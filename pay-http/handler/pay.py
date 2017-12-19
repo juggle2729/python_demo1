@@ -94,8 +94,8 @@ def create_pay_record(orderid, mchid, appid, pay_type, amount, notify_url, descr
     accountid = appid_detail.accountid
     account = Account.query.filter(Account.id == accountid).one()
     service_fee = appid_detail.service_rate / 10000.0 * float(amount)
-    if service_rate and account.balance < _SERVICE_FEE_LIMIT:  # service_fee:
-        raise InsufficientFunds(u"服务费余额不足")
+#    if service_rate and account.balance < _SERVICE_FEE_LIMIT:  # service_fee:
+#        raise InsufficientFunds(u"服务费余额不足")
 
     pay_record = PayRecord()
     pay_record.id = generate_long_id('pay')
