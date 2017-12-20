@@ -26,12 +26,14 @@ public class Main {
 	
 	static String url = "http://p.51paypay.net/api/v1/pay/submit";
 	
-	static String appid = "100003";
+	static String appid = "50000641";
 	
-	static String  APP_KEY = "880357ccd28db91f6f0f88d54889c34c";
+	static String APP_KEY = "3708ccfeb4e6eefec330ca659b6171be";
 	
-	static int payType= 21 ;
+	static int payType = 23;
 	
+	static String subject = "Test";
+
 	@SuppressWarnings({ "deprecation", "resource" })
 	public static void pay(int amount,String orderid,String notifyUrl){
         //post请求返回结果
@@ -39,8 +41,8 @@ public class Main {
         HttpPost method = new HttpPost(url);
         
         //参数拼接
-        String originStr = String.format("amount=%s&appid=%s&notifyUrl=%s&orderid=%s&payType=%s&key=%s", 
-        		amount,appid,notifyUrl,orderid,payType,APP_KEY);
+        String originStr = String.format("amount=%s&appid=%s&notifyUrl=%s&orderid=%s&payType=%s&subject=%s&key=%s", 
+        		amount,appid,notifyUrl,orderid,payType,subject,APP_KEY);
         System.out.println("originStr="+originStr);
         String signature = getMd5(originStr);
         System.out.println("signature="+signature);

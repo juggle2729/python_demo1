@@ -1,12 +1,13 @@
 <?php
-    $url = "http://p.51paypay.net/api/v1/pay/submit";
-    $appid = "100000";  // 测试appid
-    $appkey = "a1223b981e74cfd29bcb628877b08b17"; // 测试appkey
+    $url = "http://47.96.154.221/api/v1/pay/submit";
+    $appid = "50000641";  // 测试appid
+    $appkey = "3708ccfeb4e6eefec330ca659b6171be"; // 测试appkey
     $p = array(
         "amount" => "1",
         "appid" => $appid,
         "orderid" => date('YmdHis'),
-        "payType" => "2",
+        "payType" => "23",
+        "subject" => "Test",
         "notifyUrl" => "127.0.0.1",
         "orderInfo" => "支付测试",
     );
