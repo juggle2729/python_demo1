@@ -17,7 +17,7 @@ from utils.sms import send_sms_code
 from utils.api import response_wrapper, token_required, get_client_ip
 from utils import err
 from utils.respcode import StatusCode
-from .controller import send_auth_code, check_auth_code, get_app_manage, get_bankcard_info
+from .controller import send_auth_code, check_auth_code, get_app_manage, get_bankcard_info, otp_check
 from .acc_info import ACCINFO
 from cache.redis_cache import (
     get_sms_sended_cache, get_sms_cache, set_sms_sended_cache, set_sms_cache, cache_id_code, get_cache_code,
@@ -320,6 +320,14 @@ class AppManageView(MethodView):
         create_app_manage(appname, app_type, pay_type, account_id)
         return {}
 
+@response_wrapper
+@token_required
+def otp_verify():
+    account_id = g.user['id']
+    otp = request.form.get('otp')
+    if not otp or len(otp) != 6:
+        raise err.ParamError('otp')
+    return otp_check(account_id, otp)
 
 auth.add_url_rule('/appmanage', view_func=AppManageView.as_view('appmanage'))
 auth.add_url_rule('/bankcard', view_func=BankCardView.as_view('bankcard'))
@@ -334,3 +342,4 @@ auth.add_url_rule('/login', view_func=login, methods=['POST'])
 auth.add_url_rule('/register', view_func=register, methods=['POST'])
 auth.add_url_rule('/info', view_func=accinfo, methods=['GET'])
 auth.add_url_rule('/appid_mchnames', view_func=get_appid_mchnames, methods=['GET'])
+auth.add_url_rule('/otp', view_func=otp_verify, methods=['POST'])

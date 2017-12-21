@@ -289,3 +289,10 @@ class AlipayAppid(BaseModel):
     public_key = orm.Column(orm.TEXT)
     private_key = orm.Column(orm.TEXT)
     extend = orm.Column(orm.TEXT)
+
+
+class UserAuthKey(BaseModel, TimeColumnMixin):
+    __tablename__ = 'user_authkey'
+    accountid = orm.Column(orm.BigInteger, primary_key=True)
+    authkey = orm.Column(orm.VARCHAR(128))
+

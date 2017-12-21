@@ -4,6 +4,7 @@
 import logging
 import time
 
+from uuid import uuid4
 from cache import cache, prefix_key
 from utils.decorator import cache_wrapper
 from utils import tz
@@ -187,3 +188,28 @@ def get_appid_balance(appid):
         key = prefix_key('appid:%s:real_pay:%s' % (appid, real_pay))
         balance += float(cache.get(key) or 0)
     return balance
+
+@cache_wrapper
+def get_last_succ(account_id):
+    key = prefix_key('uid:%s:lastsucc' % account_id)
+    return cache.hgetall(key)
+
+@cache_wrapper
+def save_last_succ(account_id, drift, succ):
+    key = prefix_key('uid:%s:lastsucc' % account_id)
+    cache.hmset(key, {'drift': drift, 'succ': succ})
+    cache.expire(key, 600)
+
+@cache_wrapper
+def generate_otp_token(account_id):
+    key = prefix_key('uid:%s:otptoken' % account_id)
+    token = uuid4().hex
+    cache.setex(key, 60, token)
+    return token
+    
+
+@cache_wrapper
+def get_otp_token(account_id):
+    key = prefix_key('uid:%s:otptoken' % account_id)
+    return cache.get(key)
+    

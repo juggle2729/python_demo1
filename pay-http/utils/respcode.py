@@ -36,6 +36,7 @@ StatusCode = Enum({
     "INVALID_TOKEN": (105, u"TOKEN失效"),
     "NOT_ALLOWED": (106, u"权限不足"),
     "DUPLICATE_PHONE": (107, u"手机号已存在"),
+    "INVALID_OTP": (109, u"动态密码验证不通过"),
     # third party component
     "SMS_PLATFORM_ERROR": (108, u"短信平台错误"),
     "PINGXX_PLATFORM_ERROR": (130, u"ping++ 平台错误"),

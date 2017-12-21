@@ -11,7 +11,7 @@ from db.account.model import (
 from db.account.model import ADMIN_MCH_ID, IP_DICT
 from utils.decorator import sql_wrapper
 from db.pay_record.model import PAY_TYPE
-from db.account.model import TRANS_TYPE, RECHARGE_STATUS, BankCardInfo
+from db.account.model import TRANS_TYPE, RECHARGE_STATUS, BankCardInfo, UserAuthKey
 from cache import redis_cache
 from utils import err
 from db import bcrypt
@@ -712,3 +712,8 @@ def get_withdraw_done(accountid, appid=''):
         appid_detail = Appid.query.filter(Appid.appid==appid).first()
         return appid_detail.withdraw_total or 0
     return sum_query.first()[0] or 0
+
+@sql_wrapper
+def get_auth_key(accountid):
+    item = UserAuthKey.query.filter(UserAuthKey.accountid == accountid).first()
+    return item.authkey if item else ''
