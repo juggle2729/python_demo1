@@ -32,8 +32,8 @@ def run_timer():  # 启动定时器
 
 @manager.command
 def ban_dead_appid():
-    from script.appid_risk_control import _ban_dead_appid
-    _ban_dead_appid()
+    from script.appid_risk_control import ban_dead_appid_
+    ban_dead_appid_()
 
 
 @manager.command
