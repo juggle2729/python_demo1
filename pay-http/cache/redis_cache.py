@@ -213,3 +213,29 @@ def get_otp_token(account_id):
     key = prefix_key('uid:%s:otptoken' % account_id)
     return cache.get(key)
     
+@cache_wrapper
+def incr_alipay_today_amount(alipayid, amount):
+    key = prefix_key('alipay:%s' % alipayid)
+    exists = cache.exists(key)
+    ret = cache.incrbyfloat(key, float(amount))
+    if not exists:
+        ttl = tz.left_seconds_today()
+        cache.expire(key, ttl)
+    return ret
+
+@cache_wrapper
+def fresh_overload_alipay_set(alipayid):
+    key = prefix_key('alipay:overload')
+    exists = cache.exists(key)
+    ret = cache.sadd(key, alipayid)
+    if not exists:
+        ttl = tz.left_seconds_today()
+        cache.expire(key, ttl)
+    return ret
+
+    
+
+@cache_wrapper
+def get_overload_alipay_set():
+    key = prefix_key('alipay:overload')
+    return cache.smembers(key)

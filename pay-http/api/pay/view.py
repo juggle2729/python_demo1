@@ -28,7 +28,7 @@ from db.pay_record.controller import (
     update_withdraw_record, get_withdraw_balance)
 from handler.pay import create_pay_record, notify_merchant
 from db.account.controller import get_appid_detail, get_appkey, get_jinjian_appkey, create_jinjian_record
-from cache.redis_cache import submit_timer_event
+from cache.redis_cache import submit_timer_event, fresh_overload_alipay_set, incr_alipay_today_amount
 from timer import EVENT_ENUM
 from db import orm
 from cache.redis_cache import set_alipay_qr, get_alipay_qr
@@ -40,6 +40,7 @@ IntegrityErrors = (sqlalchemy.exc.IntegrityError, _mysql_exceptions.IntegrityErr
 
 _LOGGER = logging.getLogger(__name__)
 _TRACKER = logging.getLogger('tracker')
+_EVERY_DAY_MAX = 2000000
 
 _PAY_HANDLER = {
     REAL_PAY.GUANGDA: guangda,
@@ -319,6 +320,9 @@ def alipay_callback():
         orderid = data['out_trade_no']
         amount = float(data['total_amount'])
         succeed_pay('', int(orderid), amount, extend=json.dumps(data))
+        alipayid = data['app_id'].strip()
+        if float(incr_alipay_today_amount(alipayid) > _EVERY_DAY_MAX:
+            fresh_overload_alipay_set(alipayid)
         notify_merchant(orderid)
         return 'success'
     else:
