@@ -185,6 +185,11 @@ def query_pay():
 
 @payapi_wrapper
 def submit_pay():
+    def check_payamount(s):
+        if int(float(s)) % 10 == 0 and abs(int(float(s)) - float(s)) < 0.0099999999999999999999:
+            return False
+        return True
+
     raise err.SystemError('支付宝渠道维护,请使用其他方式支付.')
     query_dct = request.get_json(force=True) or {}
     _LOGGER.info('submit_pay: %s' % query_dct)
@@ -201,6 +206,8 @@ def submit_pay():
         raise err.AppIDWrong()
     orderid = query_dct['orderid']
     amount = Decimal(query_dct['amount'])
+    if not check_payamount(amount):
+        raise err.ParamError('amount should not be divided by 10')
     notify_url = query_dct['notifyUrl']
     ordername = query_dct.get('subject')
     clientip = query_dct.get('clientip')
