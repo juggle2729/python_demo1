@@ -12,6 +12,7 @@ from utils.tz import utc_to_local_str
 from utils import tz
 from cache.redis_cache import get_appid_balance
 from utils.id_generator import generate_long_id
+from utils import err
 
 _DEFAULT_PAGE_SIZE  = 10
 
@@ -272,20 +273,19 @@ def update_withdraw_record(record, fee, order_code, paystatus, extend=None):
 def update_withdraw_record_by_id(withdraw_id, status):
     if status not in (WITHDRAW_STATUS.SUCCESS, WITHDRAW_STATUS.FAIL):
         raise err.ResourceInsufficient('status not valid')
-    record = WithdrawRecord.query.filter(WithdrawRecord.id ==
-                                         withdraw_id).first()
+    record = WithdrawRecord.query.filter(WithdrawRecord.id == withdraw_id) \
+        .with_lockmode('update').first()
     if record and record.status == WITHDRAW_STATUS.READY:
         if status == WITHDRAW_STATUS.FAIL:
             record.fee = 0
         record.status = status
         record.save(auto_commit=False)
 
-        if status == WITHDRAW_STATUS.FAIL:
-            app_data = Appid.query.filter(
-                Appid.appid == record.appid).filter(
-                Appid.pay_type == PAY_TYPE.ALIPAY_REAL_H5).first()
-            app_data.withdraw_total -= Decimal(record.amount)
-            app_data.save(auto_commit=False)
+        app_data = Appid.query.filter(Appid.appid == record.appid) \
+            .filter(Appid.pay_type == PAY_TYPE.ALIPAY_REAL_H5) \
+            .with_lockmode('update').first()
+        app_data.withdraw_total -= Decimal(record.amount)
+        app_data.save(auto_commit=False)
 
         orm.session.commit()
         return True
