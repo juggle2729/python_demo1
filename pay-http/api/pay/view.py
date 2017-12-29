@@ -204,6 +204,8 @@ def submit_pay():
         raise err.SystemError()
     if not appid_detail:
         raise err.AppIDWrong()
+    if not appid_detail.valid:
+        raise err.AppidInvalid()
     orderid = query_dct['orderid']
     amount = Decimal(query_dct['amount'])
     if not check_payamount(amount):

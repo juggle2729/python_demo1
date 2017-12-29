@@ -72,17 +72,6 @@ def get_appid_detail(appid, pay_type=None, real_pay=None, polling=False):
         account_appid = query.filter(Appid.real_pay == appid_channel.real_pay).first()
     else:
         account_appid = query.first()
-        # 轮询的情况
-    if polling and account_appid and account_appid.polling:
-        _LOGGER.info('polling #########################')
-        polling_custids = PollingCustID.query.filter(PollingCustID.appid == appid) \
-            .filter(PollingCustID.valid == True).all()
-        polling_custids = list(polling_custids)
-        polling_custid = random.choice(polling_custids)
-        polling_custid.accountid = account_appid.accountid
-        polling_custid.fee_rate = account_appid.fee_rate
-        print polling_custid.custid, polling_custid.id
-        return polling_custid
     return account_appid
 
 

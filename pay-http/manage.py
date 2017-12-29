@@ -30,6 +30,11 @@ def run_timer():  # 启动定时器
     from timer.processor import start
     start()
 
+@manager.command
+def ban_dead_appid():
+    from script.appid_risk_control import _ban_dead_appid
+    _ban_dead_appid()
+
 
 @manager.command
 def flush_balance():  # 查询余额

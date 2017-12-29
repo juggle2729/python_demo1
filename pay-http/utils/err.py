@@ -65,6 +65,10 @@ class OnlyD0SupportWithdraw(PayApiError):
     MSG = u"只有D0通道支持提现接口"
 
 
+class AppidInvalid(PayApiError):
+    STATUS = 201
+    MSG = u'appid失效,请联系客服'
+
 class SystemError(PayApiError):
     STATUS = -1
     MSG = u"未知错误"
