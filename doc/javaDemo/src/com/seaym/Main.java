@@ -22,7 +22,7 @@ public class Main {
 
 	static String orderid = "100000001";
 	
-	static String notifyUrl = "http://example.com/";
+	static String notifyUrl = "http://yoururl.com";
 	
 	static String url = "http://47.96.154.221/api/v1/pay/submit";
 	

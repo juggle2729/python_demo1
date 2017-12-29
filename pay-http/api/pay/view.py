@@ -66,7 +66,6 @@ def test_wechat_h5():
             'error': 'Duplicate order id'
         }
     result = guangda.qr_pay(pay_record)
-    print result
     return redirect(result['qrCode'])
 
 
@@ -103,7 +102,6 @@ def get_public_wechat_h5_status():
 @response_wrapper
 def get_public_wechat_h5(amount):
     clientip = request.headers.get('X-Real-IP') or request.remote_addr
-    print 'clientip: ', clientip
     pay_type = PAY_TYPE.WECHAT_H5
     amount = Decimal(amount) / 100
     appid = '100000'
@@ -187,6 +185,7 @@ def query_pay():
 
 @payapi_wrapper
 def submit_pay():
+    raise err.SystemError('支付宝渠道维护,请使用其他方式支付.')
     query_dct = request.get_json(force=True) or {}
     _LOGGER.info('submit_pay: %s' % query_dct)
     check_sign(query_dct)
@@ -685,8 +684,6 @@ def swiftpass_callback():
     if status == '0' and result_code == '0':
         amount = Decimal(data['total_fee']) / 100
         if pay_result == '0':
-            print originid
-            print orderid
             succeed_pay(originid, orderid, amount, extend=json.dumps(data))
             notify_merchant(orderid)
         else:
@@ -695,10 +692,12 @@ def swiftpass_callback():
         _LOGGER.error('swiftpass callback order data error')
     return 'success'
 
+@response_wrapper
+def yinshengdf_callback():
+    return 'success'
 
 @response_wrapper
 def sand_agent_pay():
-    print request.data
     query_dct = request.get_json(force=True) or {}
     _LOGGER.info('sand agent pay: %s' % query_dct)
     check_sign(query_dct)
@@ -763,6 +762,7 @@ bp_pay.add_url_rule('/pay/alipay_h5/<int:payid>', view_func=get_alipay_h5, metho
 bp_pay.add_url_rule('/pay/query/', view_func=query_pay, methods=['POST'])
 # 客达进件回调
 bp_pay.add_url_rule('/keda/jinjian/callback', view_func=keda_jinjian_callback, methods=['POST'])
+bp_pay.add_url_rule('/ysdf/callback', view_func=yinshengdf_callback, methods=['POST'])
 # 客达提现
 bp_pay.add_url_rule('/pay/withdraw/submit', view_func=withdraw_submit, methods=['POST'])
 bp_pay.add_url_rule('/pay/withdraw/query', view_func=withdraw_query, methods=['POST'])

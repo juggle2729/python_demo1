@@ -16,18 +16,19 @@ def alipay_h5_pay(pay_record, ordername, return_url):
     appid_detail = get_appid_detail(appid, pay_type)
     alipay_appid = get_alipay_appid(appid)
     alipay_id, pub_key, notify_url = alipay_appid.aliappid, alipay_appid.public_key, alipay_appid.notify_url
+    notify_url = 'http://47.96.154.221/api/v1/p/alipay/callback'
     if not appid_detail or not alipay_id:
         raise err.AppIDWrong()
     alipay = AliPay(
         appid = alipay_id,
         app_notify_url = "http://p.51paypay.net/pay/404/",
         app_private_key_path = open("static/private.key").read(),
-        alipay_public_key_path = open("static/public.key").read(),
+        alipay_public_key_path = pub_key,
         sign_type="RSA2", # RSA 或者 RSA2
         debug=False  # 默认False
     )
     order_string = alipay.api_alipay_trade_wap_pay(
-        out_trade_no = pay_id,
+        out_trade_no = str(pay_id),
         total_amount = float(amount),
         subject = ordername,
         return_url = return_url,

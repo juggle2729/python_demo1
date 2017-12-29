@@ -75,7 +75,7 @@ def notify_success(payid):
         return True
 
 
-def get_fee(fee_rate, amount):
+def get_fee(fee_rate, amount, pay_type):
     if amount < Decimal('1'):
         return Decimal('0')
     if pay_type == PAY_TYPE.ALIPAY_REAL_H5:
@@ -94,8 +94,8 @@ def create_pay_record(orderid, mchid, appid, pay_type, amount, notify_url, descr
     accountid = appid_detail.accountid
     account = Account.query.filter(Account.id == accountid).one()
     service_fee = appid_detail.service_rate / 10000.0 * float(amount)
-#    if service_rate and account.balance < _SERVICE_FEE_LIMIT:  # service_fee:
-#        raise InsufficientFunds(u"服务费余额不足")
+    #if service_rate and account.balance < _SERVICE_FEE_LIMIT:  # service_fee:
+    #    raise InsufficientFunds(u"服务费余额不足")
 
     pay_record = PayRecord()
     pay_record.id = generate_long_id('pay')
@@ -106,7 +106,7 @@ def create_pay_record(orderid, mchid, appid, pay_type, amount, notify_url, descr
     pay_record.pay_type = pay_type or PAY_TYPE.WECHAT_H5
     pay_record.amount = amount
     pay_record.description = description
-    pay_record.fee = get_fee(fee_rate, amount)
+    pay_record.fee = get_fee(fee_rate, amount, pay_type)
     pay_record.notify_url = notify_url
     pay_record.real_pay = appid_detail.real_pay
     pay_record.real_custid = appid_detail.custid
