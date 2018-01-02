@@ -12,7 +12,7 @@ from utils import err
 def alipay_h5_pay(pay_record, ordername, return_url):
     appid, pay_type, amount, pay_id = pay_record.appid, pay_record.pay_type, pay_record.amount, pay_record.id
     appid_detail = get_appid_detail(appid, pay_type)
-    alipay_appid = get_cached_random_alipay_appid(appid)
+    alipay_appid = get_cached_random_alipay_appid()
     alipay_id, pub_key, notify_url = alipay_appid.aliappid, alipay_appid.public_key, alipay_appid.notify_url
     if not appid_detail or not alipay_id:
         raise err.AppIDWrong()

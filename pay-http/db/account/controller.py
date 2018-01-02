@@ -32,7 +32,7 @@ def get_appkey(appid):
 
 @sql_wrapper
 def get_mch_name(appid):
-    app_data = Appid.query.filter(Appid.appid== appid).first()
+    app_data = Appid.query.filter(Appid.appid == appid).first()
     if app_data:
         return app_data.mch_name
     else:
@@ -267,7 +267,6 @@ def get_jinjians(mchid,
                  end_at=None,
                  mch_name=None,
                  mch_short_name=None):
-
     query = JinjianRecord.query
     if mchid not in ADMIN_MCH_ID:
         child_mchids = get_child_mchids(mchid)
@@ -487,7 +486,6 @@ def update_recharge(orderid, amount, status, extend=''):
 @sql_wrapper
 def get_transaction_record(accountid, begin_at, end_at, charge_type,
                            status, trans_type, limit, offset):
-
     """
     {
         "total_recharge": "1000",
@@ -517,14 +515,14 @@ def get_transaction_record(accountid, begin_at, end_at, charge_type,
 
     total_size = query.count()
     trans = query.order_by(Transaction.updated_at.desc()).limit(limit).offset(offset).all()
-    total_recharge = orm.session.query(orm.func.sum(Transaction.amount)).\
-        filter(Transaction.accountid == accountid).\
-        filter(Transaction.trans_type == TRANS_TYPE.RECHARGE).\
+    total_recharge = orm.session.query(orm.func.sum(Transaction.amount)). \
+        filter(Transaction.accountid == accountid). \
+        filter(Transaction.trans_type == TRANS_TYPE.RECHARGE). \
         filter(Transaction.status == RECHARGE_STATUS.SUCCESS).first()
-    consumed = orm.session.query(orm.func.sum(Transaction.amount)).\
-        filter(Transaction.accountid == accountid).\
+    consumed = orm.session.query(orm.func.sum(Transaction.amount)). \
+        filter(Transaction.accountid == accountid). \
         filter(Transaction.trans_type == TRANS_TYPE.COST).first()
-    query_date = orm.session.query(Transaction.created_at).filter(Transaction.accountid == accountid).\
+    query_date = orm.session.query(Transaction.created_at).filter(Transaction.accountid == accountid). \
         filter(Transaction.trans_type == TRANS_TYPE.COST)
     begin_date = query_date.order_by(Transaction.created_at).first()
     end_date = query_date.order_by(Transaction.updated_at.desc()).first()
@@ -626,9 +624,12 @@ def create_merchant(form):
 def get_appmanage_by_name(appname):
     return AppManage.query.filter(AppManage.appname == appname).first()
 
+
 @sql_wrapper
 def get_bank_card(user_id):
-    return BankCardInfo.query.filter(BankCardInfo.accountid == user_id).filter(BankCardInfo.is_deleted == 0).first() or {}
+    return BankCardInfo.query.filter(BankCardInfo.accountid == user_id).filter(
+        BankCardInfo.is_deleted == 0).first() or {}
+
 
 @sql_wrapper
 def create_bankcard_info(user_id, data):
@@ -642,14 +643,16 @@ def create_bankcard_info(user_id, data):
     tobe_save.is_deleted = 0
     tobe_save.save()
 
+
 @sql_wrapper
 def delete_bankcard_info(user_id):
-    bankcard = BankCardInfo.query.filter(BankCardInfo.accountid == user_id).filter(BankCardInfo.is_deleted==0).first()
+    bankcard = BankCardInfo.query.filter(BankCardInfo.accountid == user_id).filter(BankCardInfo.is_deleted == 0).first()
     if not bankcard:
         return
     else:
         bankcard.is_deleted = 1
         bankcard.save()
+
 
 @sql_wrapper
 def get_alipay_appid(appid):
@@ -657,31 +660,37 @@ def get_alipay_appid(appid):
 
 
 @sql_wrapper
-def get_random_alipay_appid():
+def get_alipay_appid_by_alipay_id(alipay_id):
+    return AlipayAppid.query.filter(AlipayAppid.aliappid == alipay_id).first()
+
+
+@sql_wrapper
+def get_all_alipay_appid():
     alipay_appids = orm.session.query(AlipayAppid.aliappid).all()
     alipay_appids = set([each[0] for each in alipay_appids])
-    valid_alipay_appid = list(alipay_appids - get_overload_alipay_set())
-    return random.choice(valid_alipay_appid)
+    return alipay_appids
 
 
+ALL_ALIPAY_APPIDS = get_all_alipay_appid()
 NOW = time.time()
-RANDOM_ALIPAY_APPID = get_random_alipay_appid()
+
+
+@sql_wrapper
+def get_cached_all_alipay_appid():
+    global NOW, ALL_ALIPAY_APPIDS
+    now = time.time()
+    if now - NOW > 1800:
+        NOW = now
+        ALL_ALIPAY_APPIDS = get_all_alipay_appid()
+    return list(ALL_ALIPAY_APPIDS - get_overload_alipay_set())
 
 
 @sql_wrapper
 def get_cached_random_alipay_appid():
-    global NOW, RANDOM_ALIPAY_APPID
-    now = time.time()
-    if now - NOW > 1800:
-        NOW = now
-        random_alipay_apppid = get_random_alipay_appid()
-        RANDOM_ALIPAY_APPID = random_alipay_apppid
-    return RANDOM_ALIPAY_APPID
-
-
-@sql_wrapper
-def get_alipay_appid_by_alipay_id(alipay_id):
-    return AlipayAppid.query.filter(AlipayAppid.aliappid == alipay_id).first()
+    valid_alipay_appid = get_cached_all_alipay_appid()
+    alipay_appid = random.choice(valid_alipay_appid)
+    if alipay_appid:
+        return get_alipay_appid_by_alipay_id(alipay_appid)
 
 
 @sql_wrapper
