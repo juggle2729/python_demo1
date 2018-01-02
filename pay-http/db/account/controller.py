@@ -660,7 +660,7 @@ def get_alipay_appid(appid):
 def get_random_alipay_appid():
     alipay_appids = orm.session.query(AlipayAppid.aliappid).all()
     alipay_appids = set([each[0] for each in alipay_appids])
-    valid_alipay_appid = alipay_appids - get_overload_alipay_set()
+    valid_alipay_appid = list(alipay_appids - get_overload_alipay_set())
     return random.choice(valid_alipay_appid)
 
 
