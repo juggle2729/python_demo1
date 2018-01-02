@@ -9,7 +9,7 @@ from db.pay_record.model import PAY_STATUS, PayRecord, NotifyRecord, WithdrawRec
 from db.account.model import AccountRelation, Appid, Account, Transaction, TRANS_TYPE, ADMIN_MCH_ID
 from db import orm
 from utils.tz import utc_to_local_str
-from utils import tz
+from utils import tz, err
 from cache.redis_cache import get_appid_balance
 from utils.id_generator import generate_long_id
 
