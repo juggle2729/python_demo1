@@ -321,7 +321,7 @@ def alipay_callback():
         amount = float(data['total_amount'])
         succeed_pay('', int(orderid), amount, extend=json.dumps(data))
         alipayid = data['app_id'].strip()
-        if float(incr_alipay_today_amount(alipayid) > _EVERY_DAY_MAX:
+        if float(incr_alipay_today_amount(alipayid)) > _EVERY_DAY_MAX:
             fresh_overload_alipay_set(alipayid)
         notify_merchant(orderid)
         return 'success'
@@ -430,72 +430,6 @@ def get_alipay_h5(payid):
 
 
 @payapi_wrapper
-def withdraw_submit():
-    data = request.get_json(force=True) or {}
-    check_sign(data)
-    try:
-        appid = data['appid']
-        amount = Decimal(data['amount'])
-        channel = data['channel']
-        to_account = data.get('to_account')
-        _CHANNEL = {
-            'alipay': PAY_TYPE.ALIPAY_QR,
-            'weixin': PAY_TYPE.WECHAT_QR,
-            'alipay_h5': PAY_TYPE.ALIPAY_REAL_H5
-        }
-        pay_type = _CHANNEL[channel]
-        if channel == "alipay_h5":
-            if not to_account:
-                raise err.RequestParamError(u'alipay_h5 require to_account')
-            if amount > get_withdraw_balance(appid, pay_type):
-                raise err.RequestParamError(u'balance not enough')
-            if amount < Decimal('0.1'):
-                raise err.RequestParamError(u'amount invalid')
-            real_pay = REAL_PAY.ALIPAY
-        else:
-            real_pay = REAL_PAY.KEDA
-        appid_detail = get_appid_detail(appid, pay_type, real_pay=real_pay)
-        assert channel in _CHANNEL.keys(), u"channel错误"
-    except KeyError as e:
-        raise err.RequestParamError(u'缺少%s' % str(e))
-    except AssertionError as e:
-        raise err.SystemError(str(e))
-    except Exception:
-        _LOGGER.exception('withdraw submit error')
-        raise err.SystemError()
-    if appid_detail.paymenttype != 'D0':
-        raise err.OnlyD0SupportWithdraw()
-    record = create_withdraw_record(appid, real_pay, amount, channel=channel,
-                                    to_account=to_account, mchid=appid_detail.accountid)
-    if channel == "alipay_h5":
-        result = alipay_official.alipay_h5_withdraw(appid, amount, to_account, record.id)
-        if result['code'] == u'10000' and result['msg'] == u'Success':
-            _LOGGER.info("alipay_h5_withdraw_response: %s" % result)
-            out_biz_no = result['out_biz_no']
-            order_id = result['order_id']
-            update_withdraw_record(record, 0, out_biz_no, 2, extend=order_id)
-            return {
-                'msg': 'Success',
-                'status': 0
-            }
-        else:
-            raise err.SystemError()
-    result = keda.withdraw(appid_detail.custid, amount, channel)
-    if result['error'] == -1:
-        raise err.SystemError(result['message'])
-    else:
-        _data = result['data']  # data包含字段: orderCode, handfee, paystatus
-        # handfee可能为null
-        handfee = _data.pop('handfee')
-        _data['fee'] = str(Decimal(handfee)) if handfee else 0
-        update_withdraw_record(record, _data['fee'], _data['orderCode'], _data['paystatus'])
-        return {
-            'status': 0,
-            'data': _data
-        }
-
-
-@payapi_wrapper
 def withdraw_query():
     data = request.get_json(force=True) or {}
     check_sign(data)
@@ -532,55 +466,6 @@ def withdraw_query():
         else:
             return result
 
-
-@payapi_wrapper
-def withdraw_balance():
-    data = request.get_json(force=True) or {}
-    check_sign(data)
-    try:
-        appid = data['appid']
-        appid_detail = get_appid_detail(appid)
-    except Exception as e:
-        _LOGGER.exception('withdraw query balance error')
-        raise err.SystemError()
-    if appid_detail.paymenttype != 'D0':
-        raise err.OnlyD0SupportWithdraw()
-    if appid_detail.real_pay == REAL_PAY.KEDA:
-        result = keda.query_d0_balance(appid_detail.custid)
-        if result['error'] == -1:
-            raise err.SystemError(result['data']['errCode'])
-        else:
-            _data = result['data']
-            _data.pop('merchantcode')
-            for each in ('wxBalance', 'aliBalance'):
-                if each in _data:
-                    _data[each] = str(Decimal(_data[each]) / 100)
-            return {
-                'status': 0,
-                'data': _data
-            }
-    elif appid_detail.real_pay == REAL_PAY.SAND:
-        result = sand.query_balance(appid_detail.custid)
-        if result['respCode'] != u'0000':
-            raise err.SystemError(result['respDesc'])
-        else:
-            balance = result.get('balance', '')
-            if not balance:
-                raise err.SystemError(result['respDesc'])
-            if balance.startswith('-'):
-                balance = 0.0
-            else:
-                balance = float((balance[1:].lstrip('0'))) / 100
-            return {
-                'balance': balance
-            }
-    elif appid_detail.real_pay == REAL_PAY.ALIPAY:
-        result = get_withdraw_balance(appid, appid_detail.pay_type)
-        return {
-            'balance': float(balance)
-        }
-    else:
-        raise err.AppIDWrong()
 
 
 @response_wrapper
@@ -776,10 +661,6 @@ bp_pay.add_url_rule('/pay/query/', view_func=query_pay, methods=['POST'])
 # 客达进件回调
 bp_pay.add_url_rule('/keda/jinjian/callback', view_func=keda_jinjian_callback, methods=['POST'])
 bp_pay.add_url_rule('/ysdf/callback', view_func=yinshengdf_callback, methods=['POST'])
-# 客达提现
-bp_pay.add_url_rule('/pay/withdraw/submit', view_func=withdraw_submit, methods=['POST'])
-bp_pay.add_url_rule('/pay/withdraw/query', view_func=withdraw_query, methods=['POST'])
-bp_pay.add_url_rule('/pay/withdraw/balance', view_func=withdraw_balance, methods=['POST'])
 # 平台商进件
 bp_pay.add_url_rule('/jinjian/k/', view_func=keda_jinjian, methods=['POST'])
 # 杉德代付

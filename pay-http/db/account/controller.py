@@ -3,6 +3,7 @@ import json
 import random
 import uuid
 import logging
+import time
 
 from db.account.model import (
     Appid, Account, UserToken, AppManage, VALID_STATUS, IMG_PATH, RechargeRecord,
@@ -18,6 +19,7 @@ from db import bcrypt
 from db import orm
 from utils import id_generator
 from utils.respcode import StatusCode
+from cache.redis_cache import get_overload_alipay_set
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -651,7 +653,30 @@ def delete_bankcard_info(user_id):
 
 @sql_wrapper
 def get_alipay_appid(appid):
-    return AlipayAppid.query.filter(AlipayAppid.appid == appid).first()
+    raise NotImplementedError(u'此方法废弃')
+
+
+@sql_wrapper
+def get_random_alipay_appid():
+    alipay_appids = orm.session.query(AlipayAppid.aliappid).all()
+    alipay_appids = set([each[0] for each in alipay_appids])
+    valid_alipay_appid = alipay_appids - get_overload_alipay_set()
+    return random.choice(valid_alipay_appid)
+
+
+NOW = time.time()
+RANDOM_ALIPAY_APPID = get_random_alipay_appid()
+
+
+@sql_wrapper
+def get_cached_random_alipay_appid():
+    global NOW, RANDOM_ALIPAY_APPID
+    now = time.time()
+    if now - NOW > 1800:
+        NOW = now
+        random_alipay_apppid = get_random_alipay_appid()
+        RANDOM_ALIPAY_APPID = random_alipay_apppid
+    return RANDOM_ALIPAY_APPID
 
 
 @sql_wrapper
@@ -661,18 +686,20 @@ def get_alipay_appid_by_alipay_id(alipay_id):
 
 @sql_wrapper
 def query_withdraw_balance(accountid, page, size):
-    sum_query = orm.session.query(orm.func.sum(Appid.recharge_total), orm.func.sum(Appid.withdraw_total), orm.func.sum(Appid.fee_total))
+    sum_query = orm.session.query(orm.func.sum(Appid.recharge_total), orm.func.sum(Appid.withdraw_total),
+                                  orm.func.sum(Appid.fee_total))
     query = Appid.query
     if accountid not in ADMIN_MCH_ID:
         child_mchids = get_child_mchids(accountid)
         query = Appid.query.filter(Appid.accountid.in_(child_mchids))
         sum_query = sum_query.filter(Appid.accountid.in_(child_mchids))
     try:
-        query = query.filter(Appid.pay_type==23).order_by(Appid.created_at.desc())
+        query = query.filter(Appid.pay_type == 23).order_by(Appid.created_at.desc())
         pagination = query.paginate(page, size)
     except:
         return 0, []
-    withdraw_total, fee_total, recharge_total = sum_query.first()[1] or 0, sum_query.first()[2] or 0, sum_query.first()[0] or 0
+    withdraw_total, fee_total, recharge_total = sum_query.first()[1] or 0, sum_query.first()[2] or 0, sum_query.first()[
+        0] or 0
     return pagination.pages, pagination.items, withdraw_total, fee_total, recharge_total
 
 
@@ -698,9 +725,10 @@ def get_withdraw_done(accountid, appid=''):
         child_mchids = get_child_mchids(accountid)
         sum_query = sum_query.filter(Appid.accountid.in_(child_mchids))
     if appid:
-        appid_detail = Appid.query.filter(Appid.appid==appid).first()
+        appid_detail = Appid.query.filter(Appid.appid == appid).first()
         return appid_detail.withdraw_total or 0
     return sum_query.first()[0] or 0
+
 
 @sql_wrapper
 def get_auth_key(accountid):

@@ -219,7 +219,7 @@ class BankCardInfo(BaseModel, TimeColumnMixin):
     card_type = orm.Column(orm.SMALLINT)
     is_deleted = orm.Column(orm.SMALLINT)
     extend = orm.Column(orm.TEXT)
-    
+
 
 class Transaction(BaseModel, TimeColumnMixin):
     __tablename__ = "transaction"
@@ -275,15 +275,10 @@ class UserToken(BaseModel):
     token = orm.Column(orm.VARCHAR(64), primary_key=True)
     deleted = orm.Column(orm.SmallInteger, default=0, nullable=False)
 
-# @login_manager.user_loader
-# def load_user(id):
-#    from db.account.model import Account
-#    Account.query.filter(Account.id == int(id)).first()
-
 
 class AlipayAppid(BaseModel):
     __tablename__ = 'alipay_appid'
-    appid = orm.Column(orm.Integer, primary_key=True)
+    id = orm.Column(orm.Integer, primary_key=True)
     aliappid = orm.Column(orm.BigInteger, nullable=False)
     notify_url = orm.Column(orm.VARCHAR(200))
     public_key = orm.Column(orm.TEXT)
