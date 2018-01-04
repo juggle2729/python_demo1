@@ -9,8 +9,8 @@ from utils.tz import local_to_utc
 from admin.withdraw import withdraw as withdraw_blueprint
 from admin.withdraw import controller
 from db.account.model import ADMIN_MCH_ID
-from db.pay_record.controller import create_withdraw_record
-from db.account.controller import get_appid_detail, get_appmanage, get_bank_card
+from db.pay_record.controller import create_withdraw_record, get_service_fee_by_mchid
+from db.account.controller import get_appid_detail, get_appmanage, get_bank_card, get_user
 from utils import err
 
 
@@ -51,6 +51,7 @@ def withdraw_apply():
     extend = data.get('extend')
     appid = data.get('id')
     accountid = g.user['id']
+    user = get_user(accountid)
     appmanage = get_appmanage(appid)
     bank_card = get_bank_card(accountid)
     appid_detail = get_appid_detail(appid, 23)
@@ -59,7 +60,8 @@ def withdraw_apply():
 
     if amount < 2:
         raise err.ResourceInsufficient(u"提现金额必须大于2元")
-    if float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total) - amount < -0.0001:
+    service_balance = get_service_fee_by_mchid(accountid)
+    if float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - service_balance) - amount < -0.0001:
         raise err.ResourceInsufficient("提现金额不足%s" % amount)
     if not bank_card:
         raise err.ResourceInsufficient("先绑定银行卡")

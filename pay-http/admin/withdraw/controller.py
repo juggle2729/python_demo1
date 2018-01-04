@@ -4,9 +4,9 @@ import logging
 from db.account.controller import query_app_manage, get_mch_name
 from cache.redis_cache import get_appid_balance
 from db.pay_record.controller import get_withdraw_data, get_dealing_balance
-from db.account.controller import query_withdraw_balance, get_appmanage_by_appid, get_bank_card
+from db.account.controller import query_withdraw_balance, get_appmanage_by_appid, get_bank_card, get_user
 from db.pay_record.model import WITHDRAW_STATUS
-from db.pay_record.controller import get_withdraw_data, get_withdraw_record, update_withdraw_record_by_id, withdraw_dealing_count, get_withdraw_sum
+from db.pay_record.controller import get_withdraw_data, get_withdraw_record, update_withdraw_record_by_id, withdraw_dealing_count, get_withdraw_sum, get_service_fee_by_mchid
 from db.account.model import MCH_TYPE, BALANCE_TYPE
 from utils import tz
 
@@ -85,6 +85,7 @@ def get_withdraw_balance(accountid, page, size):
     pages, withdraw_apps, withdraw_total, fee_total, recharge_total = query_withdraw_balance(accountid, page, size)
     _, _, _, withdraw_fee = get_withdraw_sum(accountid, None, 'bank', None, None, None, None, WITHDRAW_STATUS.SUCCESS, None, None)
     resp = []
+    service_balance = get_service_fee_by_mchid(accountid)
     if withdraw_apps:
         for app in withdraw_apps:
             appmanage = get_appmanage_by_appid(app.appid)
@@ -99,7 +100,7 @@ def get_withdraw_balance(accountid, page, size):
                          "id": app.appid})
     dealing_total = sum([float(item['dealing']) or 0 for item in resp])
     return {'pages': pages, 'resp': resp, 'withdraw_total': '%.2f' % (float(withdraw_total) - float(dealing_total)), 'dealing_total': dealing_total,
-            'fee_total': '%.2f' % (withdraw_fee), 'recharge_total': '%.2f' % (float(recharge_total) - float(withdraw_total) - float(fee_total)) }
+            'fee_total': '%.2f' % (withdraw_fee), 'recharge_total': '%.2f' % (float(recharge_total) - float(withdraw_total) - float(fee_total) - float(service_balance)) }
 
 
 def withdraw_record(account_id, to_acc, to_acc_name, begin_at, end_at, appid, status, order_code, withdraw_type, page, size):

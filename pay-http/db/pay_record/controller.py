@@ -136,6 +136,13 @@ def get_query(mchid):
             PayRecord.mchid.in_(child_mchids))
     return query, count_query, sum_query
 
+def get_service_fee_by_appid(appid):
+    resp = orm.session.query(orm.func.sum(PayRecord.service_fee)).filter(PayRecord.appid == appid).filter(PayRecord.pay_status == PAY_STATUS.PAY_SUCCESS).first()
+    return resp[0] or 0
+    
+def get_service_fee_by_mchid(mchid):
+    resp = orm.session.query(orm.func.sum(PayRecord.service_fee)).filter(PayRecord.mchid == mchid).filter(PayRecord.pay_status == PAY_STATUS.PAY_SUCCESS).first()
+    return resp[0] or 0
 
 def get_balance(mchid):
     child_appids = get_child_appids(mchid)
@@ -147,8 +154,9 @@ def get_balance(mchid):
     balance = 0.0
     for appid in appids:
         appid_detail = Appid.query.filter(Appid.appid == appid).first()
-        balance += float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total)
-    return balance
+        service_fee = get_service_fee_by_appid(appid)
+        balance += float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - service_fee)
+    return balance 
 
 
 @sql_wrapper
@@ -170,7 +178,7 @@ def get_pay_record(mchid, pay_type, pay_status, start_date, end_date, order_id, 
     if appid:
         filters.append(PayRecord.appid == appid)
         appid_detail = Appid.query.filter(Appid.appid == appid).first()
-        balance = float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total)
+        balance = float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - get_service_fee_by_appid(appid))
     if filters:
         query = query.filter(junction(*filters))
         count_query = count_query.filter(junction(*filters))
