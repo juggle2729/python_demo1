@@ -104,7 +104,7 @@ def ysepay_daifu(daifu_record):
             "out_trade_no": str(daifu_record['id']),
             "business_code": "2010005",
             "currency": "CNY",
-            "total_amount": float(daifu_record['amount']),
+            "total_amount": float(daifu_record['amount'] - daifu_record['fee']),
             "subject": "波音代付",
             "bank_name": daifu_record['bank_name'],
             "bank_city": daifu_record['bank_city'],
