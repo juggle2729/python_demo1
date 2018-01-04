@@ -8,7 +8,7 @@ import requests
 from OpenSSL.crypto import load_privatekey, FILETYPE_PEM, sign, verify, load_certificate
 import codecs
 
-from utils import err
+from utils import err, tz
 
 PARTNER_ID = "mingde888"
 DAIFU_NOTIFY_URL = "http://47.96.154.221:8088/admin/daifu/ysepay_callback"
@@ -95,7 +95,7 @@ def ysepay_daifu(daifu_record):
     data = {
         "method": "ysepay.df.single.quick.accept",
         "partner_id": PARTNER_ID,
-        "timestamp": "2017-01-02 12:00:00",
+        "timestamp": tz.local_now(),
         "charset": "utf-8",
         "sign_type": "RSA",
         "notify_url": DAIFU_NOTIFY_URL,
@@ -124,16 +124,11 @@ def ysepay_daifu(daifu_record):
     print r.status_code
     if r.status_code == 200:
         response = r.json().get("ysepay_df_single_quick_accept_response")
-        print "resp"
-        print response
         if response and response['code'] == '10000' and response['msg'] == 'Success':
-	    print 'Success'
             return True, json.dumps(response)
         else:
-	    print 'Fail'
             return False, r.text
     else:
-        print 'json Fail'
         return False, r.text
 
 
