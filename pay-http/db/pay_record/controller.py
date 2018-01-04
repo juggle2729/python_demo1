@@ -363,14 +363,14 @@ def get_daifu_sum(accountid):
         fee_sum_query = fee_sum_query.filter(DaifuRecord.mchid.in_(child_mchids))
         count_query = count_query.filter(DaifuRecord.mchid.in_(child_mchids))
         suc_sum_query = suc_sum_query.filter(DaifuRecord.mchid.in_(child_mchids))
-        submit_sum_query = orm.session.query(orm.func.sum(DaifuRecord.amount))
+        submit_sum_query = suc_sum_query.filter(DaifuRecord.mchid.in_(child_mchids))
 
     sum_query = sum_query.first()
     fee_sum_query = fee_sum_query.first()
     count_query = count_query.first()
     suc_sum_query = suc_sum_query.filter(
         DaifuRecord.status == DAIFU_STATUS.SUCCESS).first()
-    subumit_sum_query = submit_sum_query.filter(
+    submit_sum_query = submit_sum_query.filter(
         DaifuRecord.status == DAIFU_STATUS.READY).first()
     return sum_query[0] or 0, count_query[0] or 0, suc_sum_query[0] or 0, \
             fee_sum_query[0] or 0, submit_sum_query[0] or 0

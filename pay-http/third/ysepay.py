@@ -95,7 +95,7 @@ def ysepay_daifu(daifu_record):
     data = {
         "method": "ysepay.df.single.quick.accept",
         "partner_id": PARTNER_ID,
-        "timestamp": tz.local_now(),
+        "timestamp": tz.local_now().strftime("%Y-%m-%d %H:%M:%S"),
         "charset": "utf-8",
         "sign_type": "RSA",
         "notify_url": DAIFU_NOTIFY_URL,
