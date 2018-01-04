@@ -158,6 +158,7 @@ class Appid(BaseModel, TimeColumnMixin):
     withdraw_total = orm.Column(orm.Float, default=0)  # 提现总额 Decimal(20, 5)
     fee_total = orm.Column(orm.Float, default=0)   # 实时更新每笔充值的手续费
     daifu_total = orm.Column(orm.Float, default=0)  # 代付总额 Decimal(20, 5)
+    service_fee_total = orm.Column(orm.Float, default=0)  # 服务费总额 Decmal(20, 5)
 
 
 class PollingCustID(BaseModel):

@@ -143,7 +143,6 @@ class WithdrawRecord(BaseModel, TimeColumnMixin):
     withdraw_type = orm.Column(orm.Integer)
     order_code = orm.Column(orm.String(30))
     amount = orm.Column(orm.Float)  # 提现金额
-    withdraw_type = orm.Column(orm.Integer)
     fee = orm.Column(orm.Float)  # 手续费
     status = orm.Column(orm.Integer)
     real_pay = orm.Column(orm.Integer)

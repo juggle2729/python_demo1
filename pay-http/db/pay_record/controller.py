@@ -88,6 +88,7 @@ def succeed_pay(originid, orderid, amount, extend=None):
         Appid.appid == pay_record.appid).with_lockmode('update').first()
     appid.recharge_total += Decimal(amount)
     appid.fee_total += pay_record.fee
+    appid.service_fee_total += pay_record.service_fee
     appid.save(auto_commit=False)
 
     orm.session.commit()
@@ -151,6 +152,14 @@ def get_query(mchid):
     return query, count_query, sum_query
 
 
+def get_service_fee_by_appid(appid):
+    appid_detail = Appid.query.filter(Appid.appid==appid).first()
+    return appid_detail.service_fee_total
+
+def get_service_fee_by_mchid(mchid):
+    resp = orm.session.query(orm.func.sum(Appid.service_fee_total)).filter(Appid.accountid==mchid).first()
+    return resp[0] or 0
+
 def get_balance(mchid):
     child_appids = get_child_appids(mchid)
     appids = []
@@ -161,8 +170,8 @@ def get_balance(mchid):
     balance = 0.0
     for appid in appids:
         appid_detail = Appid.query.filter(Appid.appid == appid).first()
-        balance += float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total)
-    return balance
+        balance += float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - appid_detail.service_fee_total)
+    return balance 
 
 
 @sql_wrapper
@@ -184,7 +193,7 @@ def get_pay_record(mchid, pay_type, pay_status, start_date, end_date, order_id, 
     if appid:
         filters.append(PayRecord.appid == appid)
         appid_detail = Appid.query.filter(Appid.appid == appid).first()
-        balance = float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total)
+        balance = float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - get_service_fee_by_appid(appid))
     if filters:
         query = query.filter(junction(*filters))
         count_query = count_query.filter(junction(*filters))
@@ -579,3 +588,4 @@ def withdraw_dealing_count(mchid):
         child_mchids = get_child_mchids(mchid)
         query = WithdrawRecord.query.filter(WithdrawRecord.mchid.in_(child_mchids))
     return query.filter(WithdrawRecord.channel == 'bank').filter(WithdrawRecord.status==WITHDRAW_STATUS.READY).count() or 0
+
