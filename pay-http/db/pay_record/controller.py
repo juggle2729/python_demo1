@@ -5,7 +5,9 @@ import datetime
 import logging
 
 from utils.decorator import sql_wrapper
-from db.pay_record.model import PAY_STATUS, PayRecord, NotifyRecord, WithdrawRecord, WITHDRAW_STATUS, WITHDRAW_TYPE, PAY_TYPE
+from db.pay_record.model import PAY_STATUS, PayRecord, NotifyRecord, \
+        WithdrawRecord, DaifuRecord, WITHDRAW_STATUS, WITHDRAW_TYPE, \
+        PAY_TYPE, DAIFU_STATUS, DAIFU_TYPE, DAIFU_FEE
 from db.account.model import AccountRelation, Appid, Account, Transaction, TRANS_TYPE, ADMIN_MCH_ID
 from db import orm
 from utils.tz import utc_to_local_str
@@ -17,6 +19,7 @@ from utils import err
 _DEFAULT_PAGE_SIZE  = 10
 
 _LOGGER = logging.getLogger(__name__)
+
 @sql_wrapper
 def save_originid(payid, originid):
     PayRecord.query.filter(PayRecord.id == payid).update({
@@ -34,7 +37,17 @@ def get_withdraw_balance(appid, pay_type):
     if not app_data:
         return None
     else:
-        return app_data.recharge_total - app_data.withdraw_total - app_data.fee_total
+        return app_data.recharge_total - app_data.withdraw_total - app_data.fee_total - app_data.daifu_total
+
+
+@sql_wrapper
+def get_balance_by_accountid(accountid):
+    app_data = Appid.query.filter(
+        Appid.accountid == accountid).first()
+    if not app_data:
+        return None, None
+    else:
+        return app_data.appid, app_data.recharge_total - app_data.withdraw_total - app_data.fee_total - app_data.daifu_total
 
 
 @sql_wrapper
@@ -224,6 +237,133 @@ def add_notify(payid, status):
     notify_record.status = status
     notify_record.save()
     return notify_record
+
+
+@sql_wrapper
+def create_daifu_record(daifu_data):
+    try:
+        mchid = daifu_data['accountid']
+        amount = daifu_data['amount']
+        bank_name = daifu_data['bank_name']
+        bank_city = daifu_data['bank_city']
+        bank_account_name = daifu_data['bank_account_name']
+        bank_account_no = daifu_data['bank_account_no']
+        card_type = daifu_data['card_type']
+        bank_province = daifu_data['bank_province']
+        bank = daifu_data['bank']
+        status = DAIFU_STATUS.READY
+        fee = DAIFU_FEE
+        daifu_type = DAIFU_TYPE.YSEPAY
+    except Exception, e:
+        raise err.ParamError(e)
+
+    account_detail = Appid.query.filter(Appid.accountid == mchid).first()
+    account_detail.daifu_total += Decimal('%s' % amount)
+    account_detail.save(auto_commit=False)
+
+    daifu_record = DaifuRecord()
+    daifu_record.id = generate_long_id('pay')
+    daifu_record.mchid = mchid
+    daifu_record.daifu_type = daifu_type
+    daifu_record.bank_name = bank_name
+    daifu_record.bank_city = bank_city
+    daifu_record.bank_province = bank_province
+    daifu_record.bank = bank
+    daifu_record.bank_account_name = bank_account_name
+    daifu_record.bank_account_no = bank_account_no
+    daifu_record.card_type = card_type
+    daifu_record.amount = Decimal('%s' % amount)
+    daifu_record.fee = Decimal('%s' % fee)
+    daifu_record.extend = ''
+    daifu_record.status = status
+    daifu_record.save(auto_commit=False)
+
+    orm.session.commit()
+    return daifu_record
+
+
+@sql_wrapper
+def get_daifu_record(accountid, status, bank_account_no, bank_account_name, page, size):
+    query = DaifuRecord.query
+    if accountid not in ADMIN_MCH_ID:
+        child_mchids = get_child_mchids(accountid)
+        query = DaifuRecord.query.filter(DaifuRecord.mchid.in_(child_mchids))
+    junction = orm.and_
+    filters = []
+    if status:
+        filters.append(DaifuRecord.status == int(status))
+    if bank_account_no:
+        filters.append(DaifuRecord.bank_account_no == bank_account_no)
+    if bank_account_name:
+        filters.append(DaifuRecord.bank_account_name == bank_account_name)
+    if filters:
+        query = query.filter(junction(*filters))
+    query = query.order_by(DaifuRecord.created_at.desc())
+    pagination = query.paginate(page, size)
+    return pagination.pages, pagination.items
+
+
+@sql_wrapper
+def update_daifu_record_by_id(daifu_id, status, extend=''):
+    if status == DAIFU_STATUS.READY:
+        raise err.ResourceInsufficient('status not valid')
+    record = DaifuRecord.query.filter(
+        DaifuRecord.id == daifu_id).with_lockmode('update').first()
+    if record:
+        if status == DAIFU_STATUS.REFUSED:
+            assert record.status == DAIFU_STATUS.READY
+            record.fee = 0
+        elif status == DAIFU_STATUS.PERMITED:
+            assert record.status == DAIFU_STATUS.READY
+        elif status == DAIFU_STATUS.PROCESSING:
+            assert record.status == DAIFU_STATUS.PERMITED
+        elif status == DAIFU_STATUS.SUCCESS:
+            assert record.status == DAIFU_STATUS.PROCESSING
+        elif status == DAIFU_STATUS.FAIL:
+            record.fee = 0
+            assert record.status in (DAIFU_STATUS.PROCESSING,
+                                     DAIFU_STATUS.PERMITED)
+
+        record.extend = extend
+        record.status = status
+        record.save(auto_commit=False)
+
+        if record.fee == 0:
+            app_data = Appid.query.filter(
+                Appid.accountid == record.accountid).with_lockmode('update').first()
+            app_data.daifu_total -= Decimal(record.amount)
+            app_data.save(auto_commit=False)
+
+        orm.session.commit()
+        return record
+    else:
+        raise err.ResourceInsufficient('record not valid')
+
+
+@sql_wrapper
+def get_daifu_sum(accountid):
+    sum_query = orm.session.query(orm.func.sum(DaifuRecord.amount))
+    fee_sum_query = orm.session.query(orm.func.sum(DaifuRecord.fee))
+    count_query = orm.session.query(orm.func.count(DaifuRecord.id))
+    suc_sum_query = orm.session.query(orm.func.sum(DaifuRecord.amount))
+    submit_sum_query = orm.session.query(orm.func.sum(DaifuRecord.amount))
+    if accountid not in ADMIN_MCH_ID:
+        child_mchids = get_child_mchids(accountid)
+        sum_query = sum_query.filter(DaifuRecord.mchid.in_(child_mchids))
+        fee_sum_query = fee_sum_query.filter(DaifuRecord.mchid.in_(child_mchids))
+        count_query = count_query.filter(DaifuRecord.mchid.in_(child_mchids))
+        suc_sum_query = suc_sum_query.filter(DaifuRecord.mchid.in_(child_mchids))
+        submit_sum_query = orm.session.query(orm.func.sum(DaifuRecord.amount))
+
+    sum_query = sum_query.first()
+    fee_sum_query = fee_sum_query.first()
+    count_query = count_query.first()
+    suc_sum_query = suc_sum_query.filter(
+        DaifuRecord.status == DAIFU_STATUS.SUCCESS).first()
+    subumit_sum_query = submit_sum_query.filter(
+        DaifuRecord.status == DAIFU_STATUS.READY).first()
+    return sum_query[0] or 0, count_query[0] or 0, suc_sum_query[0] or 0, \
+            fee_sum_query[0] or 0, submit_sum_query[0] or 0
 
 
 @sql_wrapper

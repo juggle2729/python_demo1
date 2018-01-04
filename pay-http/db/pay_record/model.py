@@ -57,6 +57,22 @@ WITHDRAW_TYPE = Enum({
     'HAND': (2L, u"人工转账")
 })
 
+
+DAIFU_STATUS = Enum({
+    'READY': (1L, u'初始状态'),
+    'PERMITED': (2L, u'审核通过'),
+    'REFUSED': (3L, u'审核不通过'),
+    'PROCESSING': (4L, u'代付中'),
+    'SUCCESS': (5L, u'代付成功'),
+    'FAIL': (6L, u'代付失败')
+})
+
+DAIFU_TYPE = Enum({
+    'YSEPAY': (1L, u'银盛代付'),
+})
+
+DAIFU_FEE = 2
+
 def convert_accquire_type(pay_type):
     return _acquire_type_map[pay_type]
 
@@ -139,3 +155,22 @@ class WithdrawRecord(BaseModel, TimeColumnMixin):
     extend = orm.Column(orm.TEXT)
 
 
+class DaifuRecord(BaseModel, TimeColumnMixin):
+    __tablename__ = 'daifu_record'
+    id = orm.Column(orm.BigInteger, primary_key=True)
+    mchid = orm.Column(orm.Integer, default=None, nullable=True)  # 商户号
+    daifu_type = orm.Column(orm.Integer)
+    amount = orm.Column(orm.Float)  # 提现金额
+    fee = orm.Column(orm.Float)  # 手续费
+    status = orm.Column(orm.Integer)
+    bank_name = orm.Column(orm.String(30))
+    bank_city = orm.Column(orm.String(30))
+    bank_account_name = orm.Column(orm.String(30))
+    bank_account_no = orm.Column(orm.String(30))
+    bank = orm.Column(orm.String(30))
+    bank_province = orm.Column(orm.String(30))
+    card_type = orm.Column(orm.Integer)
+    extend = orm.Column(orm.TEXT)
+
+    def as_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}

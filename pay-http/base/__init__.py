@@ -34,6 +34,7 @@ from admin.bill import bill as bill_blueprint
 from admin.jinjian import jinjian as jj_blueprint
 from admin.service_fee import fee as fee_blueprint
 from admin.withdraw import withdraw as withdraw_blueprint
+from admin.daifu import daifu as daifu_blueprint
 
 app.register_blueprint(bp_pay, url_prefix='/api/v1')
 app.register_blueprint(auth_blueprint, url_prefix='/admin/auth')
@@ -41,6 +42,7 @@ app.register_blueprint(bill_blueprint, url_prefix='/admin/bill')
 app.register_blueprint(fee_blueprint, url_prefix='/admin/service')
 app.register_blueprint(jj_blueprint, url_prefix='/super_admin/jinjian')
 app.register_blueprint(withdraw_blueprint, url_prefix='/admin/withdraw')
+app.register_blueprint(daifu_blueprint, url_prefix='/admin/daifu')
 
 # LOG CONFIG
 DEBUG = app.debug
