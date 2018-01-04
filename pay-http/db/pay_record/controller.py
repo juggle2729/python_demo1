@@ -3,6 +3,7 @@
 from decimal import Decimal
 import datetime
 import logging
+from random import randint
 
 from utils.decorator import sql_wrapper
 from db.pay_record.model import PAY_STATUS, PayRecord, NotifyRecord, \
@@ -262,7 +263,7 @@ def create_daifu_record(daifu_data):
     account_detail.save(auto_commit=False)
 
     daifu_record = DaifuRecord()
-    daifu_record.id = generate_long_id('pay')
+    daifu_record.id = int('%s%s' % (tz.times_str(), randint(1111,9999)))
     daifu_record.mchid = mchid
     daifu_record.daifu_type = daifu_type
     daifu_record.bank_name = bank_name
@@ -330,7 +331,7 @@ def update_daifu_record_by_id(daifu_id, status, extend=''):
 
         if record.fee == 0:
             app_data = Appid.query.filter(
-                Appid.accountid == record.accountid).with_lockmode('update').first()
+                Appid.accountid == record.mchid).with_lockmode('update').first()
             app_data.daifu_total -= Decimal(record.amount)
             app_data.save(auto_commit=False)
 

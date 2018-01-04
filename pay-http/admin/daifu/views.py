@@ -1,6 +1,7 @@
 # coding: utf-8
 import json
 from datetime import datetime, date, timedelta
+import logging
 
 from flask import request, g
 from flask.views import MethodView
@@ -15,6 +16,7 @@ from db.pay_record.model import DAIFU_STATUS
 from db.pay_record.controller import get_balance_by_accountid
 from utils import err
 
+_LOGGER = logging.getLogger("51paypay")
 
 @daifu_blueprint.route('/apply', methods=['POST'])
 @response_wrapper
@@ -97,4 +99,5 @@ def daifu_balance():
 def alipay_pay_callback():
     data = request.form.to_dict()
     _LOGGER.info('ysepay callback form: %s' % data)
-    return fail
+    result = controller.update_daifu_by_ysepay(data)
+    return result
