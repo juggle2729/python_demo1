@@ -7,8 +7,8 @@ from random import randint
 
 from utils.decorator import sql_wrapper
 from db.pay_record.model import PAY_STATUS, PayRecord, NotifyRecord, \
-        WithdrawRecord, DaifuRecord, WITHDRAW_STATUS, WITHDRAW_TYPE, \
-        PAY_TYPE, DAIFU_STATUS, DAIFU_TYPE, DAIFU_FEE
+    WithdrawRecord, DaifuRecord, WITHDRAW_STATUS, WITHDRAW_TYPE, \
+    PAY_TYPE, DAIFU_STATUS, DAIFU_TYPE, DAIFU_FEE
 from db.account.model import AccountRelation, Appid, Account, Transaction, TRANS_TYPE, ADMIN_MCH_ID
 from db import orm
 from utils.tz import utc_to_local_str
@@ -17,9 +17,10 @@ from cache.redis_cache import get_appid_balance
 from utils.id_generator import generate_long_id
 from utils import err
 
-_DEFAULT_PAGE_SIZE  = 10
+_DEFAULT_PAGE_SIZE = 10
 
 _LOGGER = logging.getLogger(__name__)
+
 
 @sql_wrapper
 def save_originid(payid, originid):
@@ -31,24 +32,13 @@ def save_originid(payid, originid):
 
 
 @sql_wrapper
-def get_withdraw_balance(appid, pay_type):
-    app_data = Appid.query.filter(
-        Appid.appid == appid).filter(
-        Appid.pay_type == pay_type).first()
-    if not app_data:
-        return None
-    else:
-        return app_data.recharge_total - app_data.withdraw_total - app_data.fee_total - app_data.daifu_total
-
-
-@sql_wrapper
 def get_balance_by_accountid(accountid):
     app_data = Appid.query.filter(
         Appid.accountid == accountid).first()
     if not app_data:
         return None, None
     else:
-        return app_data.appid, app_data.recharge_total - app_data.withdraw_total - app_data.fee_total - app_data.daifu_total
+        return app_data.appid, app_data.recharge_total - app_data.withdraw_total - app_data.fee_total - app_data.daifu_total - app_data.service_fee_total
 
 
 @sql_wrapper
@@ -72,8 +62,8 @@ def succeed_pay(originid, orderid, amount, extend=None):
         account.balance -= service_fee
         account.save(auto_commit=False)
 
-        last_trans = Transaction.query.filter(Transaction.accountid == account.id).\
-            filter(Transaction.trans_type == TRANS_TYPE.COST).\
+        last_trans = Transaction.query.filter(Transaction.accountid == account.id). \
+            filter(Transaction.trans_type == TRANS_TYPE.COST). \
             filter(orm.func.date_(Transaction.updated_at) == orm.func.date_(tz.local_now())).first()
         if not last_trans:
             last_trans = Transaction()
@@ -152,15 +142,17 @@ def get_query(mchid):
     return query, count_query, sum_query
 
 
-def get_service_fee_by_appid(appid):
-    appid_detail = Appid.query.filter(Appid.appid==appid).first()
-    return appid_detail.service_fee_total
-
+@sql_wrapper
 def get_service_fee_by_mchid(mchid):
-    resp = orm.session.query(orm.func.sum(Appid.service_fee_total)).filter(Appid.accountid==mchid).first()
+    resp = orm.session.query(orm.func.sum(Appid.service_fee_total)).filter(Appid.accountid == mchid).first()
     return resp[0] or 0
 
-def get_balance(mchid):
+
+@sql_wrapper
+def get_balance_by_parent_id(mchid):
+    """
+    获取该商户及子商户的可提现余额, 尽用于显示, 真正提现请用另一方法判断
+    """
     child_appids = get_child_appids(mchid)
     appids = []
     if child_appids:
@@ -170,8 +162,9 @@ def get_balance(mchid):
     balance = 0.0
     for appid in appids:
         appid_detail = Appid.query.filter(Appid.appid == appid).first()
-        balance += float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - appid_detail.service_fee_total)
-    return balance 
+        balance += float(
+            appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - appid_detail.service_fee_total - appid_detail.daifu_total)
+    return balance
 
 
 @sql_wrapper
@@ -179,7 +172,7 @@ def get_pay_record(mchid, pay_type, pay_status, start_date, end_date, order_id, 
     query, count_query, sum_query = get_query(mchid)
     filters = []
     junction = orm.and_
-    balance = get_balance(mchid)
+    balance = get_balance_by_parent_id(mchid)
     if pay_type:
         filters.append(PayRecord.pay_type == pay_type)
     if pay_status:
@@ -193,7 +186,8 @@ def get_pay_record(mchid, pay_type, pay_status, start_date, end_date, order_id, 
     if appid:
         filters.append(PayRecord.appid == appid)
         appid_detail = Appid.query.filter(Appid.appid == appid).first()
-        balance = float(appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - get_service_fee_by_appid(appid))
+        balance = float(
+            appid_detail.recharge_total - appid_detail.withdraw_total - appid_detail.fee_total - appid_detail.service_fee_total - appid_detail.daifu_total)
     if filters:
         query = query.filter(junction(*filters))
         count_query = count_query.filter(junction(*filters))
@@ -203,8 +197,8 @@ def get_pay_record(mchid, pay_type, pay_status, start_date, end_date, order_id, 
     if limit > 0:
         query = query.limit(limit)
         query = query.offset(offset)
-    return count_query.all()[0][0] or 0, query.all(), sum_query.all()[0][0] or 0,\
-        sum_query.all()[0][1] or 0, sum_query.all()[0][2] or 0, balance
+    return count_query.all()[0][0] or 0, query.all(), sum_query.all()[0][0] or 0, \
+           sum_query.all()[0][1] or 0, sum_query.all()[0][2] or 0, balance
 
 
 @sql_wrapper
@@ -272,7 +266,7 @@ def create_daifu_record(daifu_data):
     account_detail.save(auto_commit=False)
 
     daifu_record = DaifuRecord()
-    daifu_record.id = int('%s%s' % (tz.times_str(), randint(1111,9999)))
+    daifu_record.id = int('%s%s' % (tz.times_str(), randint(1111, 9999)))
     daifu_record.mchid = mchid
     daifu_record.daifu_type = daifu_type
     daifu_record.bank_name = bank_name
@@ -373,7 +367,7 @@ def get_daifu_sum(accountid):
     submit_sum_query = submit_sum_query.filter(
         DaifuRecord.status == DAIFU_STATUS.READY).first()
     return sum_query[0] or 0, count_query[0] or 0, suc_sum_query[0] or 0, \
-            fee_sum_query[0] or 0, submit_sum_query[0] or 0
+           fee_sum_query[0] or 0, submit_sum_query[0] or 0
 
 
 @sql_wrapper
@@ -451,12 +445,14 @@ def get_withdraw_data(account_id):
         appids = [child.appid for child in child_appids] if child_appids is not None else []
         sum_query = sum_query.filter(WithdrawRecord.appid.in_(appids))
     return sum_query.filter(WithdrawRecord.status == WITHDRAW_STATUS.SUCCESS).all()[0][0], \
-        sum_query.filter(WithdrawRecord.status == WITHDRAW_STATUS.SUCCESS).all()[0][1], \
-        sum_query.filter(WithdrawRecord.status == WITHDRAW_STATUS.READY).all()[0][0], \
-        sum_query.filter(WithdrawRecord.status == WITHDRAW_STATUS.READY).all()[0][1]
+           sum_query.filter(WithdrawRecord.status == WITHDRAW_STATUS.SUCCESS).all()[0][1], \
+           sum_query.filter(WithdrawRecord.status == WITHDRAW_STATUS.READY).all()[0][0], \
+           sum_query.filter(WithdrawRecord.status == WITHDRAW_STATUS.READY).all()[0][1]
+
 
 @sql_wrapper
-def get_withdraw_sum(accountid, order_code, pay_type, appid, start_date, end_date, withdraw_type, withdraw_status, to_account, acc_name):
+def get_withdraw_sum(accountid, order_code, pay_type, appid, start_date, end_date, withdraw_type, withdraw_status,
+                     to_account, acc_name):
     sum_query = orm.session.query(orm.func.sum(WithdrawRecord.amount))
     count_query = orm.session.query(orm.func.count(WithdrawRecord.id))
     suc_sum_query = orm.session.query(orm.func.sum(WithdrawRecord.amount))
@@ -512,10 +508,9 @@ def get_withdraw_record(accountid, order_code, pay_type, pay_status, start_amoun
                         end_amount, appid, start_date, end_date, page, size,
                         withdraw_type=WITHDRAW_TYPE.API,
                         withdraw_status=WITHDRAW_STATUS.READY,
-                        to_account = None,
-                        acc_name = None,
-                        source = False):
-
+                        to_account=None,
+                        acc_name=None,
+                        source=False):
     limit = _DEFAULT_PAGE_SIZE if not size or size > _DEFAULT_PAGE_SIZE else size
     if not page or page < 1:
         page = 1
@@ -523,7 +518,7 @@ def get_withdraw_record(accountid, order_code, pay_type, pay_status, start_amoun
 
     if source:
         count, _, amount, fee, service_fee, balance = get_pay_record(accountid, pay_type, pay_status,
-                                                                   start_date, end_date, '', appid, limit, offset)
+                                                                     start_date, end_date, '', appid, limit, offset)
     query = WithdrawRecord.query
     if accountid not in ADMIN_MCH_ID:
         child_mchids = get_child_mchids(accountid)
@@ -560,7 +555,7 @@ def get_withdraw_record(accountid, order_code, pay_type, pay_status, start_amoun
         pagination = query.paginate(page, size)
     except Exception as e:
         _LOGGER.error("page nate error %s" % e)
-        return 0, [], 0, 0,0,0,0
+        return 0, [], 0, 0, 0, 0, 0
     if source:
         return pagination.pages, pagination.items, count, amount, fee, service_fee, balance
     else:
@@ -575,7 +570,8 @@ def get_withdraw_by_id(id):
 
 @sql_wrapper
 def get_dealing_balance(appid):
-    result = orm.session.query(orm.func.sum(WithdrawRecord.amount)).filter(WithdrawRecord.appid==appid).filter(WithdrawRecord.status==WITHDRAW_STATUS.READY).first()
+    result = orm.session.query(orm.func.sum(WithdrawRecord.amount)).filter(WithdrawRecord.appid == appid).filter(
+        WithdrawRecord.status == WITHDRAW_STATUS.READY).first()
     if result:
         return result[0] or 0
     return 0
@@ -587,5 +583,5 @@ def withdraw_dealing_count(mchid):
     if mchid not in ADMIN_MCH_ID:
         child_mchids = get_child_mchids(mchid)
         query = WithdrawRecord.query.filter(WithdrawRecord.mchid.in_(child_mchids))
-    return query.filter(WithdrawRecord.channel == 'bank').filter(WithdrawRecord.status==WITHDRAW_STATUS.READY).count() or 0
-
+    return query.filter(WithdrawRecord.channel == 'bank').filter(
+        WithdrawRecord.status == WITHDRAW_STATUS.READY).count() or 0
