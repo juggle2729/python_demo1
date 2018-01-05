@@ -38,14 +38,15 @@ def create_charge(orderid, pay_amount):
 if __name__ == '__main__':
     import requests
 
-    APP_ID = '100009'
-    APP_KEY = '115a7ab33f4a479cb12a7ac0996f7fb1'
+    APP_ID = '50000600'
+    APP_KEY = '6545e586c0eea3a91125d5a9abadc094'
     #APP_ID = '30000628'
     #APP_KEY = '7f112c27446447c74433344b08ec747f'
     # url = "http://localhost:5000/api/v1/pay/submit"
-    url = "http://p.51paypay.net/api/v1/pay/submit"
+    url = "http://47.96.154.221/api/v1/pay/submit"
+    # url = "http://p.51paypay.net/api/v1/pay/submit"
 
-    params = create_charge(int(time.time() * 1000), 20.01)  # 10.00)
+    params = create_charge(int(time.time() * 1000), 0.10)  # 10.00)
     headers = {
         "Content-Type": "application/json;charset=utf-8"
     }

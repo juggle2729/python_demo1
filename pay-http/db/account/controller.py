@@ -666,7 +666,7 @@ def get_alipay_appid_by_alipay_id(alipay_id):
 
 @sql_wrapper
 def get_all_alipay_appid():
-    alipay_appids = orm.session.query(AlipayAppid.aliappid).all()
+    alipay_appids = orm.session.query(AlipayAppid.aliappid).filter(AlipayAppid.valid == True).all()
     alipay_appids = set([each[0] for each in alipay_appids])
     return alipay_appids
 

@@ -285,6 +285,7 @@ class AlipayAppid(BaseModel):
     notify_url = orm.Column(orm.VARCHAR(200))
     public_key = orm.Column(orm.TEXT)
     private_key = orm.Column(orm.TEXT)
+    valid = orm.Column(orm.Integer)   # 0无效，1有效
     extend = orm.Column(orm.TEXT)
 
 

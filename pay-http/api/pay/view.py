@@ -191,7 +191,7 @@ def submit_pay():
             return False
         return True
 
-    raise err.SystemError('支付宝渠道维护,请使用其他方式支付.')
+    # raise err.SystemError('支付宝渠道维护,请使用其他方式支付.')
     query_dct = request.get_json(force=True) or {}
     _LOGGER.info('submit_pay: %s' % query_dct)
     check_sign(query_dct)
@@ -321,7 +321,7 @@ def alipay_callback():
         amount = float(data['total_amount'])
         succeed_pay('', int(orderid), amount, extend=json.dumps(data))
         alipayid = data['app_id'].strip()
-        if float(incr_alipay_today_amount(alipayid)) > _EVERY_DAY_MAX:
+        if float(incr_alipay_today_amount(alipayid, amount)) > _EVERY_DAY_MAX:
             fresh_overload_alipay_set(alipayid)
         notify_merchant(orderid)
         return 'success'
