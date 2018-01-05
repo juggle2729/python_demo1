@@ -696,7 +696,7 @@ def get_cached_random_alipay_appid():
 @sql_wrapper
 def query_withdraw_balance(accountid, page, size):
     sum_query = orm.session.query(orm.func.sum(Appid.recharge_total), orm.func.sum(Appid.withdraw_total),
-                                  orm.func.sum(Appid.fee_total))
+                                  orm.func.sum(Appid.fee_total), orm.func.sum(Appid.service_fee_total), orm.func.sum(Appid.daifu_total))
     query = Appid.query
     if accountid not in ADMIN_MCH_ID:
         child_mchids = get_child_mchids(accountid)
@@ -707,9 +707,9 @@ def query_withdraw_balance(accountid, page, size):
         pagination = query.paginate(page, size)
     except:
         return 0, []
-    withdraw_total, fee_total, recharge_total = sum_query.first()[1] or 0, sum_query.first()[2] or 0, sum_query.first()[
-        0] or 0
-    return pagination.pages, pagination.items, withdraw_total, fee_total, recharge_total
+    result = sum_query.first()
+    recharge_total, withdraw_total, fee_total, service_fee_total, daifu_total = result[0], result[1], result[2], result[3], result[4]
+    return pagination.pages, pagination.items, recharge_total, withdraw_total, fee_total, service_fee_total, daifu_total
 
 
 @sql_wrapper

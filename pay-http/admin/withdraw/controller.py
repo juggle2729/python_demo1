@@ -3,20 +3,18 @@
 import logging
 from db.account.controller import query_app_manage, get_mch_name
 from cache.redis_cache import get_appid_balance
-from db.pay_record.controller import get_withdraw_data, get_dealing_balance
-from db.account.controller import query_withdraw_balance, get_appmanage_by_appid, get_bank_card, get_user
+from db.account.controller import query_withdraw_balance, get_bank_card
 from db.pay_record.model import WITHDRAW_STATUS
-from db.pay_record.controller import get_withdraw_data, get_withdraw_record, update_withdraw_record_by_id, withdraw_dealing_count, get_withdraw_sum, get_service_fee_by_mchid
+from db.pay_record.controller import get_withdraw_data, get_withdraw_record, update_withdraw_record_by_id, \
+    get_withdraw_sum, get_service_fee_by_mchid, get_dealing_balance
 from db.account.model import MCH_TYPE, BALANCE_TYPE
 from utils import tz
-
 
 _LOGGER = logging.getLogger(__name__)
 _DEFAULT_PAGE_SIZE = 100
 
 
 def get_withdraw_info(account_id, appid, app_type, valid, name, page, size):
-
     limit = _DEFAULT_PAGE_SIZE if not size or size > _DEFAULT_PAGE_SIZE else size
     if not page or page < 1:
         page = 1
@@ -82,15 +80,17 @@ def get_withdraw_account(account_id, bank_name, balance_type,
 
 
 def get_withdraw_balance(accountid, page, size):
-    pages, withdraw_apps, withdraw_total, fee_total, recharge_total = query_withdraw_balance(accountid, page, size)
-    _, _, _, withdraw_fee = get_withdraw_sum(accountid, None, 'bank', None, None, None, None, WITHDRAW_STATUS.SUCCESS, None, None)
+    pages, withdraw_apps, recharge_total, withdraw_total, fee_total, service_fee_total, daifu_total = query_withdraw_balance(
+        accountid, page, size)
+    _, _, _, withdraw_fee = get_withdraw_sum(accountid, None, 'bank', None, None, None, None, WITHDRAW_STATUS.SUCCESS,
+                                             None, None)
     resp = []
-    service_balance = get_service_fee_by_mchid(accountid)
+    service_fee_total = get_service_fee_by_mchid(accountid)
     if withdraw_apps:
         for app in withdraw_apps:
-            appmanage = get_appmanage_by_appid(app.appid)
             bank_card = get_bank_card(accountid)
-            amount = round(float(app.recharge_total - app.withdraw_total - app.fee_total), 2)
+            amount = round(
+                float(app.recharge_total - app.withdraw_total - app.fee_total - app.daifu_total - app.service_total), 2)
             resp.append({"amount": amount if amount >= 0 else 0,
                          "mch_name": app.mch_name,
                          "appid": app.appid,
@@ -99,8 +99,11 @@ def get_withdraw_balance(accountid, page, size):
                          "card_number": bank_card.card_number if bank_card else '',
                          "id": app.appid})
     dealing_total = sum([float(item['dealing']) or 0 for item in resp])
-    return {'pages': pages, 'resp': resp, 'withdraw_total': '%.2f' % (float(withdraw_total) - float(dealing_total)), 'dealing_total': dealing_total,
-            'fee_total': '%.2f' % (withdraw_fee), 'recharge_total': '%.2f' % (float(recharge_total) - float(withdraw_total) - float(fee_total) - float(service_balance)) }
+    return {'pages': pages, 'resp': resp, 'withdraw_total': '%.2f' % (float(withdraw_total) - float(dealing_total)),
+            'dealing_total': dealing_total,
+            'fee_total': '%.2f' % (withdraw_fee), 'recharge_total': '%.2f' % (
+            float(recharge_total) - float(withdraw_total) - float(fee_total) - float(service_fee_total) - float(
+                daifu_total))}
 
 
 def withdraw_record(account_id, to_acc, to_acc_name, begin_at, end_at, appid, status, order_code, withdraw_type, page, size):

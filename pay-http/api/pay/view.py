@@ -24,8 +24,7 @@ from db.pay_record.model import PAY_TYPE, convert_pay_status
 from third import guangda, keda, sand, wanhong, swiftpass, alipay_official
 from db.account.model import REAL_PAY
 from db.pay_record.controller import (
-    succeed_pay, fail_pay, get_pay, get_pay_by_id, create_withdraw_record,
-    update_withdraw_record, get_withdraw_balance)
+    succeed_pay, fail_pay, get_pay, get_pay_by_id, create_withdraw_record, update_withdraw_record)
 from handler.pay import create_pay_record, notify_merchant
 from db.account.controller import get_appid_detail, get_appkey, get_jinjian_appkey, create_jinjian_record
 from cache.redis_cache import submit_timer_event, fresh_overload_alipay_set, incr_alipay_today_amount
@@ -311,6 +310,7 @@ def sand_callback():
 
     return 'respCode=000000'
 
+
 @response_wrapper
 def alipay_callback():
     data = request.form.to_dict()
@@ -467,7 +467,6 @@ def withdraw_query():
             return result
 
 
-
 @response_wrapper
 def keda_jinjian():
     '''
@@ -590,9 +589,11 @@ def swiftpass_callback():
         _LOGGER.error('swiftpass callback order data error')
     return 'success'
 
+
 @response_wrapper
 def yinshengdf_callback():
     return 'success'
+
 
 @response_wrapper
 def sand_agent_pay():

@@ -10,13 +10,12 @@ from utils.types import Enum
 from base import login_manager
 from db.bill.model import Bill
 
-
 ADMIN_MCH_ID = [116, 120]  # 财务,管理员,新增加同事, 马云
 
 IP_DICT = {
     116: ('113.57.172.122',),
-    111:('134.159.205.34', '134.159.148.26','134.159.148.25', '203.177.197.72',),
-    110:('134.159.205.34', '203.190.69.126','134.159.148.26', '134.159.148.25',),
+    111: ('134.159.205.34', '134.159.148.26', '134.159.148.25', '203.177.197.72',),
+    110: ('134.159.205.34', '203.190.69.126', '134.159.148.26', '134.159.148.25',),
 }
 
 # 上游支付渠道
@@ -35,7 +34,7 @@ APP_TYPE = Enum({
     'APP': (3L, u'app')
 })
 
-VALID_STATUS = Enum({   # ---> JINJIAN_STATUS
+VALID_STATUS = Enum({  # ---> JINJIAN_STATUS
     'AUDIT': (0L, u'商户提交此单'),
     'REFUSED': (1L, u'我们拒绝此单'),
     'FAILED': (2L, u'银行拒单'),
@@ -73,7 +72,6 @@ CHARGE_TYPE = Enum({
     'WY': (1L, u"网银"),
 })
 
-
 APPID_STATUS = Enum({
     "UNREADY": (0L, u"待审核"),
     "VALID": (1L, u"已生效"),
@@ -81,13 +79,11 @@ APPID_STATUS = Enum({
     "DELETE": (3L, u"被删除")
 })
 
-
 MCH_TYPE = Enum({
     "ENTERPRISE": (1L, u"企业"),
     "PRIVATE": (2L, u"个体工商户"),
     "PUBLIC": (3L, u"事业单位")
 })
-
 
 BALANCE_TYPE = Enum({
     "PUBLIC": (1L, u"对公"),
@@ -156,9 +152,13 @@ class Appid(BaseModel, TimeColumnMixin):
     service_rate = orm.Column(orm.Integer)  # 服务费,万分率
     recharge_total = orm.Column(orm.Float, default=0)  # 充值总额 Decimal(20, 5)
     withdraw_total = orm.Column(orm.Float, default=0)  # 提现总额 Decimal(20, 5)
-    fee_total = orm.Column(orm.Float, default=0)   # 实时更新每笔充值的手续费
+    fee_total = orm.Column(orm.Float, default=0)  # 实时更新每笔充值的手续费
     daifu_total = orm.Column(orm.Float, default=0)  # 代付总额 Decimal(20, 5)
     service_fee_total = orm.Column(orm.Float, default=0)  # 服务费总额 Decmal(20, 5)
+
+    def get_balance(self):
+        return float(
+            self.recharge_total - self.withdraw_total - self.fee_total - self.service_fee_total - self.daifu_total)
 
 
 class PollingCustID(BaseModel):
@@ -198,8 +198,8 @@ class AppManage(BaseModel, TimeColumnMixin):
     paymenttype = orm.Column(orm.String(30))
     mch_name = orm.Column(orm.String(30))
     mch_short_name = orm.Column(orm.String(30))
-    mch_number = orm.Column(orm.BigInteger)   # 商户编号
-    balance_type = orm.Column(orm.Integer)   # 结算方式，1-对公，2-对私
+    mch_number = orm.Column(orm.BigInteger)  # 商户编号
+    balance_type = orm.Column(orm.Integer)  # 结算方式，1-对公，2-对私
     balance_name = orm.Column(orm.String(30))  # 结算户名
     userid_card = orm.Column(orm.BigInteger)  # 提现人身份证
     bank_city = orm.Column(orm.String(30))  # 开户城市
@@ -207,8 +207,9 @@ class AppManage(BaseModel, TimeColumnMixin):
     card_number = orm.Column(orm.BigInteger)  # 结算银行卡号码
     card_name = orm.Column(orm.String(30))  # 支付联行号银行名
     bank_no = orm.Column(orm.BigInteger)  # 支行联行号
-    industry_no = orm.Column(orm.BigInteger) # 行业编号
+    industry_no = orm.Column(orm.BigInteger)  # 行业编号
     extend = orm.Column(orm.TEXT)
+
 
 class BankCardInfo(BaseModel, TimeColumnMixin):
     __tablename__ = "bankcard_info"
@@ -293,4 +294,3 @@ class UserAuthKey(BaseModel, TimeColumnMixin):
     __tablename__ = 'user_authkey'
     accountid = orm.Column(orm.BigInteger, primary_key=True)
     authkey = orm.Column(orm.VARCHAR(128))
-
